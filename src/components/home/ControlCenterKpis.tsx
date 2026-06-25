@@ -33,10 +33,8 @@ export function ControlCenterKpis({
             transition={{ delay: index * 0.04 }}
           >
             <span className="control-center-kpi-label">{item.label}</span>
-            <div className="control-center-kpi-main">
-              <span className="control-center-kpi-value">{value}</span>
-              <KpiMiniViz kind={item.viz} value={raw} />
-            </div>
+            <span className="control-center-kpi-value">{value}</span>
+            <KpiMiniViz kind={item.viz} value={raw} />
           </motion.button>
         );
       })}
