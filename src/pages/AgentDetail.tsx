@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import { CaretLeft } from "@phosphor-icons/react";
+import { Btn } from "../components/primitives/Btn";
+import { Icon } from "../components/primitives/Icon";
 import { useApp } from "../context/AppContext";
 import { getMockProject } from "../data/mockProject";
 import { AgentFlowMap } from "../components/home/AgentFlowMap";
@@ -64,10 +66,10 @@ export function AgentDetail() {
   return (
     <div className="agent-detail">
       <header className="agent-detail-header">
-        <button type="button" className="agent-detail-back" onClick={closeAgent}>
-          <CaretLeft size={16} weight="bold" />
+        <Btn type="button" variant="ghost" size="sm" className="agent-detail-back" onClick={closeAgent}>
+          <Icon icon={CaretLeft} size="md" weight="bold" />
           Agents
-        </button>
+        </Btn>
         <div className="agent-detail-title-row">
           <div>
             <h1>{agent.name}</h1>
@@ -75,9 +77,9 @@ export function AgentDetail() {
           </div>
           <div className="agent-detail-header-actions">
             <StatusBadge status={agent.status} />
-            <button type="button" className="btn btn-secondary btn-md">
+            <Btn type="button" variant="secondary" size="md">
               Deploy
-            </button>
+            </Btn>
           </div>
         </div>
       </header>

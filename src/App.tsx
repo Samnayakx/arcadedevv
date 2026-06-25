@@ -13,6 +13,7 @@ import { Playground } from "./pages/Playground";
 import { ToolCatalog } from "./pages/ToolCatalog";
 import { SandboxFlow } from "./pages/SandboxFlow";
 import { AgentDetail } from "./pages/AgentDetail";
+import { DesignSystem } from "./pages/DesignSystem";
 import { fadeIn } from "./app/motion";
 
 const ONBOARDING_SCREENS = new Set([
@@ -21,7 +22,7 @@ const ONBOARDING_SCREENS = new Set([
   "gateway",
   "sandbox",
 ]);
-const DASHBOARD_SCREENS = new Set(["empty", "active", "playground", "agent-detail", "tool-catalog"]);
+const DASHBOARD_SCREENS = new Set(["empty", "active", "playground", "agent-detail", "tool-catalog", "design-system"]);
 
 function MainContent() {
   const { screen, setScreen } = useApp();
@@ -34,6 +35,10 @@ function MainContent() {
       if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "g") {
         event.preventDefault();
         setScreen("get-started");
+      }
+      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "d") {
+        event.preventDefault();
+        setScreen("design-system");
       }
     };
 
@@ -98,6 +103,7 @@ function MainContent() {
             {screen === "agent-detail" && <AgentDetail />}
             {screen === "playground" && <Playground />}
             {screen === "tool-catalog" && <ToolCatalog />}
+            {screen === "design-system" && <DesignSystem />}
           </motion.main>
         </AnimatePresence>
         {isDashboard && <AppFooter />}

@@ -1,6 +1,7 @@
 import { BookOpen, Command, MagnifyingGlass } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 import { ArcadeLogo } from "./ArcadeLogo";
+import { Icon } from "../primitives/Icon";
 
 export function OnboardingHeader({
   headerTrail,
@@ -40,15 +41,15 @@ export function OnboardingHeader({
           Feedback
         </button>
         <button type="button" className="onboarding-kbd-btn onboarding-search-btn" aria-label="Search">
-          <MagnifyingGlass size={14} />
+          <Icon icon={MagnifyingGlass} size="sm" />
           <span>Search...</span>
           <kbd>⌘K</kbd>
         </button>
         <button type="button" className="onboarding-icon-btn" aria-label="Documentation">
-          <BookOpen size={18} />
+          <Icon icon={BookOpen} size="lg" />
         </button>
         <button type="button" className="onboarding-icon-btn" aria-label="Command palette">
-          <Command size={16} weight="bold" />
+          <Icon icon={Command} size="md" weight="bold" />
         </button>
         <div className="onboarding-avatar" aria-hidden>
           SN

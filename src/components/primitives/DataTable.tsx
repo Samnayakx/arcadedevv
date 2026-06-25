@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Btn } from "./Btn";
 
 interface Column<T> {
   key: string;
@@ -46,13 +47,13 @@ export function DataTable<T extends { id: string }>({
               ))}
               {onRowAction && (
                 <td>
-                  <button
-                    type="button"
-                    className="table-action"
+                  <Btn
+                    variant="link"
+                    size="sm"
                     onClick={() => onRowAction(row)}
                   >
                     {actionLabel}
-                  </button>
+                  </Btn>
                 </td>
               )}
             </tr>

@@ -1,5 +1,8 @@
 import { ArrowRight, Bug, ChatsCircle, Database } from "@phosphor-icons/react";
 import type { AgentFlow, FlowStatus } from "../../types";
+import { Btn } from "../primitives/Btn";
+import { CardHead } from "../primitives/CardHead";
+import { Icon } from "../primitives/Icon";
 import { StatusBadge } from "../primitives/StatusBadge";
 
 function agentActionLabel(status: FlowStatus): string {
@@ -20,15 +23,15 @@ function agentActionLabel(status: FlowStatus): string {
 function AgentIcon({ name }: { name: string }) {
   const lower = name.toLowerCase();
   if (lower.includes("support") || lower.includes("inbox")) {
-    return <ChatsCircle size={18} weight="duotone" />;
+    return <Icon icon={ChatsCircle} size="lg" weight="duotone" aria-hidden />;
   }
   if (lower.includes("bug")) {
-    return <Bug size={18} weight="duotone" />;
+    return <Icon icon={Bug} size="lg" weight="duotone" aria-hidden />;
   }
   if (lower.includes("crm")) {
-    return <Database size={18} weight="duotone" />;
+    return <Icon icon={Database} size="lg" weight="duotone" aria-hidden />;
   }
-  return <ChatsCircle size={18} weight="duotone" />;
+  return <Icon icon={ChatsCircle} size="lg" weight="duotone" aria-hidden />;
 }
 
 export function AgentCardsPanel({
@@ -40,15 +43,12 @@ export function AgentCardsPanel({
 }) {
   return (
     <div className="agent-cards dashboard-card dashboard-card-fill">
-      <div className="dashboard-card-head">
-        <div>
-          <h3>Agents</h3>
-          <p className="agent-cards-subtitle">
-            Health and last activity across your agent flows
-          </p>
-        </div>
-        <span className="dashboard-card-meta">{flows.length} active</span>
-      </div>
+      <CardHead
+        title="Agents"
+        subtitle="Health and last activity across your agent flows"
+        subtitleClassName="agent-cards-subtitle"
+        meta={flows.length > 0 ? `${flows.length} active` : undefined}
+      />
 
       {flows.length === 0 ? (
         <p className="dashboard-empty-copy">No agents yet. Create your first flow to get started.</p>
@@ -96,14 +96,14 @@ export function AgentCardsPanel({
                       )}
                     </td>
                     <td className="agent-cards-action">
-                      <button
-                        type="button"
-                        className="agent-cards-action-btn"
+                      <Btn
+                        variant="secondary"
+                        size="sm"
                         onClick={() => onOpenAgent(flow.id)}
                       >
                         {action}
-                        <ArrowRight size={14} weight="bold" aria-hidden />
-                      </button>
+                        <Icon icon={ArrowRight} size="sm" weight="bold" aria-hidden />
+                      </Btn>
                     </td>
                   </tr>
                 );

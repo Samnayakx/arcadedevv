@@ -22,6 +22,8 @@ import type { Screen, TabId } from "../../types";
 import profileAvatar from "../../assets/profile-avatar.png";
 import { ArcadeLogo } from "./ArcadeLogo";
 import { TopBarBreadcrumb } from "./TopBarBreadcrumb";
+import { Btn } from "../primitives/Btn";
+import { Icon as UiIcon } from "../primitives/Icon";
 
 type NavTarget =
   | { kind: "tab"; tab: TabId }
@@ -317,15 +319,17 @@ export function TopBar({
     <header className="top-bar top-bar-cms">
       <div className="top-bar-cms-inner">
         <div className="top-bar-cms-left">
-          <button
+          <Btn
             type="button"
+            variant="icon"
+            size="sm"
             className="top-bar-sidebar-toggle"
             aria-label={sidebarToggleLabel}
             aria-expanded={sidebarViewport === "desktop" ? !sidebarCollapsed : !!sidebarOpen}
             onClick={onToggleSidebar}
           >
-            <Sidebar size={18} weight="regular" />
-          </button>
+            <UiIcon icon={Sidebar} size="lg" />
+          </Btn>
 
           <div className="top-bar-divider" aria-hidden />
 
@@ -333,13 +337,13 @@ export function TopBar({
         </div>
 
         <div className="top-bar-cms-right">
-          <button type="button" className="top-bar-icon-btn" aria-label="Notifications">
-            <Bell size={18} weight="regular" />
-          </button>
-          <button type="button" className="btn btn-primary top-bar-cta" onClick={() => setScreen("get-started")}>
-            <Plus size={16} weight="bold" aria-hidden />
+          <Btn type="button" variant="icon" size="sm" className="top-bar-icon-btn" aria-label="Notifications">
+            <UiIcon icon={Bell} size="lg" />
+          </Btn>
+          <Btn type="button" variant="primary" size="md" className="top-bar-cta" onClick={() => setScreen("get-started")}>
+            <UiIcon icon={Plus} size="md" weight="bold" aria-hidden />
             <span>Create an agent flow</span>
-          </button>
+          </Btn>
         </div>
       </div>
     </header>

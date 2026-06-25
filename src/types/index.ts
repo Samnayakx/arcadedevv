@@ -7,7 +7,8 @@ export type Screen =
   | "active"
   | "playground"
   | "agent-detail"
-  | "tool-catalog";
+  | "tool-catalog"
+  | "design-system";
 
 export type ProjectMaturity =
   | "empty"

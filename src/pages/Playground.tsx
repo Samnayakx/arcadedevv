@@ -12,6 +12,8 @@ import { PlaygroundHistoryDrawer } from "../components/playground/PlaygroundHist
 import { PlaygroundStatusBar } from "../components/playground/PlaygroundStatusBar";
 import { PlaygroundToolPanel } from "../components/playground/PlaygroundToolPanel";
 import { PlaygroundTracePanel } from "../components/playground/PlaygroundTracePanel";
+import { Btn } from "../components/primitives/Btn";
+import { Icon } from "../components/primitives/Icon";
 
 export function Playground() {
   const [mode, setMode] = useState<"chat" | "execute">("chat");
@@ -28,17 +30,18 @@ export function Playground() {
     <div className="playground-page">
       <header className="playground-toolbar">
         <div className="playground-toolbar-inner">
-          <div className="playground-mode-toggle" role="tablist" aria-label="Playground mode">
+          <div className="playground-mode-toggle tab-bar" role="tablist" aria-label="Playground mode">
             <button
               type="button"
               role="tab"
               id="playground-tab-chat"
               aria-selected={mode === "chat"}
               aria-controls="playground-workspace"
-              className={clsx("playground-mode-btn", mode === "chat" && "playground-mode-btn-active")}
+              className={clsx("tab", mode === "chat" && "active")}
               onClick={() => setMode("chat")}
             >
               Test Prompt
+              {mode === "chat" && <span className="tab-underline" aria-hidden />}
             </button>
             <button
               type="button"
@@ -46,31 +49,30 @@ export function Playground() {
               id="playground-tab-execute"
               aria-selected={mode === "execute"}
               aria-controls="playground-workspace"
-              className={clsx(
-                "playground-mode-btn",
-                mode === "execute" && "playground-mode-btn-active",
-              )}
+              className={clsx("tab", mode === "execute" && "active")}
               onClick={() => setMode("execute")}
             >
-              <Code size={14} weight="regular" />
+              <Icon icon={Code} size="sm" aria-hidden />
               Run Agent
+              {mode === "execute" && <span className="tab-underline" aria-hidden />}
             </button>
           </div>
 
           <div className="playground-toolbar-meta">
             <PlaygroundStatusBar compact />
-            <button type="button" className="playground-toolbar-btn" onClick={handleNewSession}>
-              <Plus size={14} weight="bold" />
+            <Btn variant="ghost" size="sm" className="playground-toolbar-btn" onClick={handleNewSession}>
+              <Icon icon={Plus} size="sm" weight="bold" />
               New Session
-            </button>
-            <button
-              type="button"
-              className="playground-toolbar-btn playground-toolbar-btn-icon"
+            </Btn>
+            <Btn
+              variant="icon"
+              size="sm"
+              className="playground-toolbar-btn-icon"
               aria-label="History"
               onClick={() => setHistoryOpen(true)}
             >
-              <ClockCounterClockwise size={16} weight="regular" />
-            </button>
+              <Icon icon={ClockCounterClockwise} size="md" />
+            </Btn>
           </div>
         </div>
       </header>

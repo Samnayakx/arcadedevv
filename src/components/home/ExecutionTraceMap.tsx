@@ -14,6 +14,9 @@ import { ArrowRight } from "@phosphor-icons/react";
 import clsx from "clsx";
 import { useEffect, useMemo, useState } from "react";
 import type { Run } from "../../types";
+import { Btn } from "../primitives/Btn";
+import { CardHead } from "../primitives/CardHead";
+import { Icon } from "../primitives/Icon";
 import { StatusBadge } from "../primitives/StatusBadge";
 import { TraceMapNode } from "./flow/TraceMapNode";
 import { buildTraceGraph, type TraceMapNodeData } from "./flow/traceMapUtils";
@@ -124,18 +127,17 @@ export function ExecutionTraceMap({
         expanded && "execution-trace-map-expanded",
       )}
     >
-      <div className="dashboard-card-head">
-        <div>
-          <h3>Recent executions</h3>
-          <p className="trace-preview-subtitle">
-            {selectedRun.flowName} · {selectedRun.duration} · {selectedRun.user}
-          </p>
-        </div>
-        <div className="trace-preview-head-meta">
-          <StatusBadge status={selectedRun.status} small />
-          <span className="dashboard-card-meta">{selectedRun.timestamp}</span>
-        </div>
-      </div>
+      <CardHead
+        title="Recent executions"
+        subtitle={`${selectedRun.flowName} · ${selectedRun.duration} · ${selectedRun.user}`}
+        subtitleClassName="trace-preview-subtitle"
+        meta={
+          <div className="trace-preview-head-meta">
+            <StatusBadge status={selectedRun.status} small />
+            <span className="dashboard-card-meta">{selectedRun.timestamp}</span>
+          </div>
+        }
+      />
 
       <ReactFlowProvider>
         <TraceCanvas run={selectedRun} />
@@ -163,14 +165,15 @@ export function ExecutionTraceMap({
           </div>
         )}
 
-        <button
-          type="button"
-          className="execution-trace-open-btn"
+        <Btn
+          variant="secondary"
+          size="sm"
+          className="execution-trace-open-cta"
           onClick={() => onOpenTrace(selectedRun.id)}
         >
           Open full trace
-          <ArrowRight size={14} weight="bold" aria-hidden />
-        </button>
+          <Icon icon={ArrowRight} size="sm" weight="bold" aria-hidden />
+        </Btn>
       </div>
     </div>
   );

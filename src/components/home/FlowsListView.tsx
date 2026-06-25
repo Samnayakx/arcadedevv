@@ -8,6 +8,8 @@ import { useMemo, useState } from "react";
 import type { AgentFlow } from "../../types";
 import { ListViewShell } from "../list/ListViewShell";
 import { AppLogoList } from "../primitives/AppChip";
+import { Btn } from "../primitives/Btn";
+import { Icon } from "../primitives/Icon";
 import { StatusBadge } from "../primitives/StatusBadge";
 
 const STATUS_TABS = [
@@ -83,7 +85,7 @@ export function FlowsListView({
         </>
       }
       title="Agents"
-      titleIcon={<GitBranch size={22} weight="regular" className="list-view-title-icon" />}
+      titleIcon={<Icon icon={GitBranch} size="lg" className="list-view-title-icon" />}
       tabs={STATUS_TABS.map((tab) => ({ id: tab.id, label: tab.label }))}
       activeTab={statusTab}
       onTabChange={(id) => {
@@ -101,18 +103,18 @@ export function FlowsListView({
             <span>Select all</span>
           </label>
           <div className="list-view-toolbar-actions">
-            <button type="button" className="list-view-action-btn">
-              <Funnel size={14} weight="regular" />
+            <Btn variant="secondary" size="sm">
+              <Icon icon={Funnel} size="sm" />
               Filters
-            </button>
-            <button type="button" className="list-view-action-btn">
-              <Prohibit size={14} weight="regular" />
+            </Btn>
+            <Btn variant="secondary" size="sm">
+              <Icon icon={Prohibit} size="sm" />
               Pause
-            </button>
-            <button type="button" className="list-view-action-btn">
-              <PencilSimple size={14} weight="regular" />
+            </Btn>
+            <Btn variant="secondary" size="sm">
+              <Icon icon={PencilSimple} size="sm" />
               Edit
-            </button>
+            </Btn>
           </div>
         </>
       }

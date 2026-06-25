@@ -103,7 +103,7 @@ function PathCard({
       <div className="route-pills">
         {path.pills.map((pill) => (
           <span key={pill} className="route-pill">
-            <BrandLogo name={pill} size={12} />
+            <BrandLogo name={pill} size="sm" />
             {pill}
           </span>
         ))}

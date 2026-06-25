@@ -1,5 +1,8 @@
 import { ArrowRight } from "@phosphor-icons/react";
 import type { AttentionItem, Severity } from "../../types";
+import { Btn } from "../primitives/Btn";
+import { CardHead } from "../primitives/CardHead";
+import { Icon } from "../primitives/Icon";
 
 const SEVERITY_ORDER: Record<Severity, number> = {
   high: 0,
@@ -30,17 +33,12 @@ export function NeedsAttentionCards({
 
   return (
     <div className="needs-attention-inbox dashboard-card dashboard-card-fill">
-      <div className="dashboard-card-head">
-        <div>
-          <h3>Needs attention</h3>
-          <p className="needs-attention-subtitle">
-            Blockers ranked by urgency
-          </p>
-        </div>
-        {items.length > 0 && (
-          <span className="dashboard-card-meta">{items.length} open</span>
-        )}
-      </div>
+      <CardHead
+        title="Needs attention"
+        subtitle="Blockers ranked by urgency"
+        subtitleClassName="needs-attention-subtitle"
+        meta={items.length > 0 ? `${items.length} open` : undefined}
+      />
 
       {items.length === 0 ? (
         <p className="dashboard-empty-copy">No open issues. Execution health looks clear.</p>
@@ -81,14 +79,14 @@ export function NeedsAttentionCards({
                     </button>
                   </td>
                   <td className="needs-attention-action-cell">
-                    <button
-                      type="button"
-                      className="agent-cards-action-btn"
+                    <Btn
+                      variant="secondary"
+                      size="sm"
                       onClick={() => onOpenAgent?.(item.flowId)}
                     >
                       {item.nextAction}
-                      <ArrowRight size={14} weight="bold" aria-hidden />
-                    </button>
+                      <Icon icon={ArrowRight} size="sm" weight="bold" aria-hidden />
+                    </Btn>
                   </td>
                 </tr>
               ))}

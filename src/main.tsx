@@ -6,6 +6,7 @@ import { CommandPaletteProvider } from "./context/CommandPaletteContext";
 import { CommandPalette } from "./components/chrome/CommandPalette";
 import "./styles/global.css";
 import "./styles/typography.css";
+import "./styles/layout.css";
 import "./styles/components.css";
 
 createRoot(document.getElementById("root")!).render(

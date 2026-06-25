@@ -10,13 +10,14 @@
 
 ## UI rules
 
-1. **Phosphor icons only** — no Lucide or other icon sets.
-2. **Design tokens only** — use CSS variables from `tokens.css`, no hardcoded one-offs.
-3. **Status is color + icon** — every status maps to token + Phosphor icon per `design.md`.
-4. **Empty states never fake data** — states 1/2 show copy + CTAs, not populated tables.
-5. **Flow filter scopes tabs** — selecting a flow filters Runs, Tool Calls, Users, Auth, Policies, Audit.
-6. **Health cards are clickable** — route to matching tab.
-7. **Trace drawer** opens from Run row Action column only.
+1. **Phosphor icons only** — use `Icon` primitive or documented sizes (`--icon-xs` … `--icon-lg`).
+2. **Design tokens only** — CSS variables from `global.css`, `typography.css`, `layout.css`; no hardcoded hex in components.
+3. **Buttons** — prefer `Btn` primitive; variants: `primary` | `secondary` | `ghost` | `link` | `icon`.
+4. **Status is color + icon** — `StatusBadge` maps to semantic tokens per `design.md`.
+5. **Empty states never fake data** — states 1/2 show copy + CTAs, not populated tables.
+6. **Spacing** — use `--space-*` scale; card heads use `--card-pad-x` / `--card-pad-y`.
+7. **Zero radius** — all containers flat; exceptions documented in `design.md` (tool pills, KPI pixels).
+8. **Trace drawer** opens from run actions and trace previews.
 
 ## Arcade grounding
 
@@ -31,7 +32,7 @@
 
 1. **TypeScript strict** — no `any`.
 2. **Components in folders:** `chrome/`, `primitives/`, `flows/`, `home/`, `pages/`.
-3. **Screen state in AppContext** — `get-started | build | gateway | sandbox | empty | active`.
+3. **Screen state in AppContext** — `get-started | build | gateway | sandbox | empty | active | playground | tool-catalog | agent-detail`.
 4. **No localStorage** in v1 — React state only.
 5. **API swap** replaces `mockProject` import only; component interfaces unchanged.
 6. **Respect `prefers-reduced-motion`** via `useReducedMotion`.
@@ -41,6 +42,9 @@
 | File | Updates when |
 |------|----------------|
 | `prd.md` | Scope or feature changes |
-| `design.md` | Tokens, layout, animation |
+| `design.md` | Tokens, layout, components |
 | `rules.md` | Conventions |
 | `timeline.md` | Milestones completed |
+| `src/styles/global.css` | Color, spacing, layout tokens |
+| `src/styles/typography.css` | Type scale |
+| `src/styles/layout.css` | Layout utilities |

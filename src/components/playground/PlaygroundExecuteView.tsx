@@ -133,7 +133,7 @@ export function PlaygroundExecuteView({
                   <span className="mono">{param.label}</span>
                   <input
                     type="text"
-                    className="playground-execute-input"
+                    className="input playground-execute-input"
                     value={params[param.name] ?? ""}
                     placeholder={param.placeholder}
                     onChange={(e) =>

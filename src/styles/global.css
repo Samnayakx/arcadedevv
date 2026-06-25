@@ -69,6 +69,31 @@
   --topbar-height: 56px;
   --content-max-width: 1280px;
   --content-pad-x: 24px;
+
+  /* Spacing scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+
+  /* Layout aliases */
+  --card-pad-x: var(--space-4);
+  --card-pad-y: var(--space-3);
+  --section-gap: var(--space-5);
+  --stack-gap-sm: var(--space-2);
+  --stack-gap-md: var(--space-3);
+
+  /* Icon & logo sizes */
+  --icon-xs: 12px;
+  --icon-sm: 14px;
+  --icon-md: 16px;
+  --icon-lg: 18px;
+  --logo-sm: 12px;
+  --logo-md: 14px;
+  --logo-lg: 16px;
   --playground-max-width: 880px;
   --playground-surface: #030303;
   --playground-surface-raised: #060606;

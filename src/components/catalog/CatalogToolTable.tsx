@@ -12,6 +12,8 @@ import {
 import clsx from "clsx";
 import { useMemo, useState } from "react";
 import { BrandLogo } from "../primitives/BrandLogo";
+import { Btn } from "../primitives/Btn";
+import { Icon } from "../primitives/Icon";
 import type { CatalogTool } from "../../data/catalogTools";
 
 type SortKey = "name" | "description" | "paramCount";
@@ -93,25 +95,25 @@ export function CatalogToolTable({
                 <td className="mono catalog-tool-table-name">{tool.name}</td>
                 <td className="catalog-tool-table-desc">{tool.description}</td>
                 <td className="catalog-tool-table-params">
-                  <SlidersHorizontal size={12} weight="regular" aria-hidden />
+                  <Icon icon={SlidersHorizontal} size="xs" aria-hidden />
                   <span>{tool.paramCount}</span>
                 </td>
                 <td>
                   <span className="catalog-tool-req">
-                    <BrandLogo name={app} size={12} />
+                    <BrandLogo name={app} size="sm" />
                     <span className="mono">{tool.requirement}</span>
                   </span>
                 </td>
                 <td>
                   <div className="catalog-tool-actions">
-                    <button type="button" className="catalog-tool-action-btn">
-                      <Eye size={13} weight="regular" aria-hidden />
+                    <Btn variant="secondary" size="sm">
+                      <Icon icon={Eye} size="sm" aria-hidden />
                       View
-                    </button>
-                    <button type="button" className="catalog-tool-action-btn">
-                      <Play size={13} weight="regular" aria-hidden />
+                    </Btn>
+                    <Btn variant="secondary" size="sm">
+                      <Icon icon={Play} size="sm" aria-hidden />
                       Execute
-                    </button>
+                    </Btn>
                   </div>
                 </td>
               </tr>

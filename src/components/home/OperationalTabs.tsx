@@ -11,6 +11,7 @@ import type {
   ToolCallHealth,
 } from "../../types";
 import { DataTable } from "../primitives/DataTable";
+import { Btn } from "../primitives/Btn";
 import { AppChip, AppChipList, ToolActionCell } from "../primitives/AppChip";
 import { EmptyState, EmptyStateActions } from "../primitives/EmptyState";
 
@@ -146,7 +147,7 @@ export function OperationalTabs({
                   { key: "usedBy", label: "Used by" },
                   { key: "tokenStatus", label: "Token status" },
                   { key: "issue", label: "Issue" },
-                  { key: "action", label: "Action", render: (r) => <button type="button" className="table-action">{r.action}</button> },
+                  { key: "action", label: "Action", render: (r) => <Btn variant="link" size="sm">{r.action}</Btn> },
                 ]}
                 rows={auth}
               />
@@ -167,7 +168,7 @@ export function OperationalTabs({
                   { key: "triggered", label: "Triggered" },
                   { key: "affectedFlow", label: "Affected flow" },
                   { key: "decision", label: "Decision" },
-                  { key: "action", label: "Action", render: (r) => <button type="button" className="table-action">{r.action}</button> },
+                  { key: "action", label: "Action", render: (r) => <Btn variant="link" size="sm">{r.action}</Btn> },
                 ]}
                 rows={policies}
               />
@@ -188,7 +189,7 @@ export function OperationalTabs({
                   { key: "toolAction", label: "Tool action", render: (r) => <ToolActionCell action={r.toolAction} /> },
                   { key: "onBehalfOf", label: "On behalf of" },
                   { key: "result", label: "Result" },
-                  { key: "traceId", label: "Trace", mono: true, render: (r) => <button type="button" className="table-action" onClick={() => r.runId && openTrace(r.runId)}>View</button> },
+                  { key: "traceId", label: "Trace", mono: true, render: (r) => <Btn variant="link" size="sm" onClick={() => r.runId && openTrace(r.runId)}>View</Btn> },
                 ]}
                 rows={audit}
               />

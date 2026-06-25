@@ -11,6 +11,8 @@ import clsx from "clsx";
 import { useMemo, useState } from "react";
 import { CatalogToolTable } from "../components/catalog/CatalogToolTable";
 import { BrandLogo } from "../components/primitives/BrandLogo";
+import { Btn } from "../components/primitives/Btn";
+import { Icon } from "../components/primitives/Icon";
 import { getCatalogTools } from "../data/catalogTools";
 import {
   CATALOG_INTEGRATIONS,
@@ -60,7 +62,7 @@ function CatalogRow({
         aria-expanded={expanded}
         onClick={onToggle}
       >
-        <BrandLogo name={item.app} size={22} className="tool-catalog-row-logo" />
+        <BrandLogo name={item.app} size="lg" className="tool-catalog-row-logo" />
 
         <div className="tool-catalog-row-copy">
           <div className="tool-catalog-row-title-line">
@@ -159,10 +161,10 @@ export function ToolCatalog() {
           ))}
         </nav>
 
-        <button type="button" className="tool-catalog-mcp-btn">
-          <Plus size={14} weight="bold" />
+        <Btn type="button" variant="primary" size="sm" className="tool-catalog-mcp-btn">
+          <Icon icon={Plus} size="sm" weight="bold" />
           Custom MCP
-        </button>
+        </Btn>
       </aside>
 
       <main className="tool-catalog-main">
