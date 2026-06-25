@@ -8,10 +8,10 @@ export type FlowMapNodeData = {
   ghost?: boolean;
 };
 
-const COL_GAP = 148;
-const ROW_OFFSET = 52;
-const CENTER_Y = 56;
-const START_X = 8;
+const COL_GAP = 172;
+const ROW_OFFSET = 60;
+const CENTER_Y = 64;
+const START_X = 12;
 
 export function buildFlowGraph(
   nodes: FlowNode[],

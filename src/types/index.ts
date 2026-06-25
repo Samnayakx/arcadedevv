@@ -1,6 +1,4 @@
 export type Screen =
-  | "create-organization"
-  | "create-project"
   | "get-started"
   | "build"
   | "gateway"

@@ -1,8 +1,8 @@
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useApp } from "../context/AppContext";
 import { getMockProject } from "../data/mockProject";
 import { AgentFlowMap } from "../components/home/AgentFlowMap";
-import { FlowsListView } from "../components/home/FlowsListView";
 import { ControlCenterKpis } from "../components/home/ControlCenterKpis";
 import {
   ControlCenterEmptyHero,
@@ -16,7 +16,6 @@ import { ProjectSummaryPanel } from "../components/home/ProjectSummaryPanel";
 import { RecentRunsPanel } from "../components/home/RecentRunsPanel";
 import { SetupCtaBanner } from "../components/home/SetupCtaBanner";
 import { TraceDrawer } from "../components/home/TraceDrawer";
-import { EmptyState, EmptyStateActions } from "../components/primitives/EmptyState";
 import type { ProjectMaturity } from "../types";
 
 const MATURITY_OPTIONS: { id: ProjectMaturity; label: string }[] = [
@@ -56,7 +55,6 @@ export function ProjectHome() {
     setActiveTab,
     activeTab,
     screen,
-    setScreen,
     openTrace,
     openAgent,
   } = useApp();
@@ -66,41 +64,16 @@ export function ProjectHome() {
   const isFirstRun = maturity === "first_run";
   const isSetupPhase = isPreRun || isFirstRun;
   const isActive = maturity === "active" && !isEmpty;
-  const isFlowsPage = activeTab === "flows";
 
   const project = getMockProject(maturity);
   const latestRun = project.runs[0];
+  const operationsRef = useRef<HTMLElement>(null);
 
-  if (isFlowsPage && screen !== "agent-detail") {
-    return (
-      <div className="project-home project-home-list">
-        {isEmpty || project.flows.length === 0 ? (
-          <EmptyState
-            title="No agents yet"
-            description="Agents connect tools, permissions, users, and execution logs in one workflow."
-            actions={
-              <EmptyStateActions
-                primary="New Agent"
-                secondary="Browse tools"
-                onPrimary={() => setScreen("get-started")}
-                onSecondary={() => setScreen("get-started")}
-              />
-            }
-          />
-        ) : (
-          <FlowsListView
-            flows={project.flows}
-            onViewRuns={(flowId) => {
-              setFlowFilter(flowId);
-              setActiveTab("runs");
-            }}
-            onOpenAgent={openAgent}
-          />
-        )}
-        <TraceDrawer />
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (activeTab !== "dashboard" && operationsRef.current) {
+      operationsRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [activeTab]);
 
   if (isEmpty) {
     return (
@@ -244,7 +217,7 @@ export function ProjectHome() {
       )}
 
       {isActive && (
-        <section className="dashboard-section dashboard-operations">
+        <section ref={operationsRef} className="dashboard-section dashboard-operations">
           <OperationalTabs project={project} isEmpty={isEmpty} />
         </section>
       )}

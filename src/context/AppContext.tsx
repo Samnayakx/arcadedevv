@@ -35,7 +35,7 @@ interface AppContextValue {
 const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [screen, setScreen] = useState<Screen>("create-organization");
+  const [screen, setScreen] = useState<Screen>("get-started");
   const [maturity, setMaturity] = useState<ProjectMaturity>("empty");
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
   const [flowFilter, setFlowFilter] = useState("all");

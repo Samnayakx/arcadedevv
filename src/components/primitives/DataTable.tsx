@@ -5,6 +5,8 @@ interface Column<T> {
   label: string;
   render?: (row: T) => ReactNode;
   mono?: boolean;
+  className?: string;
+  headerClassName?: string;
 }
 
 export function DataTable<T extends { id: string }>({
@@ -24,7 +26,7 @@ export function DataTable<T extends { id: string }>({
         <thead>
           <tr>
             {columns.map((col) => (
-              <th key={col.key}>{col.label}</th>
+              <th key={col.key} className={col.headerClassName}>{col.label}</th>
             ))}
             {onRowAction && <th>Action</th>}
           </tr>
@@ -33,7 +35,10 @@ export function DataTable<T extends { id: string }>({
           {rows.map((row) => (
             <tr key={row.id}>
               {columns.map((col) => (
-                <td key={col.key} className={col.mono ? "mono" : undefined}>
+                <td
+                  key={col.key}
+                  className={[col.mono ? "mono" : undefined, col.className].filter(Boolean).join(" ") || undefined}
+                >
                   {col.render
                     ? col.render(row)
                     : String((row as Record<string, unknown>)[col.key] ?? "—")}

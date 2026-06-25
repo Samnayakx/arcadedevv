@@ -25,27 +25,51 @@ export function RecentRunsPanel({
       {recent.length === 0 ? (
         <p className="dashboard-empty-copy">Runs will appear here after your first agent action.</p>
       ) : (
-        <ul className="recent-runs-list">
-          {recent.map((run) => (
-            <li key={run.id} className="recent-runs-item">
-              <button type="button" className="recent-runs-main" onClick={() => onOpenRun(run.id)}>
-                <span className="recent-runs-name">{run.name}</span>
-                <span className="recent-runs-meta">
-                  {run.timestamp} · {run.duration}
-                </span>
-              </button>
-              <button
-                type="button"
-                className="table-action"
-                onClick={() => onOpenAgent?.(run.flowId)}
-              >
-                {run.flowName}
-              </button>
-              <AppLogoList apps={run.toolsCalled} />
-              <StatusBadge status={run.status} small />
-            </li>
-          ))}
-        </ul>
+        <div className="recent-runs-table-wrap">
+          <table className="recent-runs-table">
+            <thead>
+              <tr>
+                <th>Run</th>
+                <th>Agent</th>
+                <th>Tools</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recent.map((run) => (
+                <tr key={run.id}>
+                  <td className="recent-runs-run">
+                    <button type="button" className="recent-runs-main" onClick={() => onOpenRun(run.id)}>
+                      <span className="recent-runs-name">{run.name}</span>
+                      <span className="recent-runs-meta">
+                        {run.timestamp} · {run.duration}
+                      </span>
+                    </button>
+                  </td>
+                  <td className="recent-runs-agent">
+                    {onOpenAgent ? (
+                      <button
+                        type="button"
+                        className="recent-runs-link"
+                        onClick={() => onOpenAgent(run.flowId)}
+                      >
+                        {run.flowName}
+                      </button>
+                    ) : (
+                      run.flowName
+                    )}
+                  </td>
+                  <td className="recent-runs-tools">
+                    <AppLogoList apps={run.toolsCalled} />
+                  </td>
+                  <td className="recent-runs-status">
+                    <StatusBadge status={run.status} small />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

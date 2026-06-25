@@ -22,30 +22,54 @@ export function NeedsAttentionTable({
       ) : (
         <DataTable
           columns={[
-            { key: "issue", label: "Issue" },
+            {
+              key: "issue",
+              label: "Issue",
+              className: "needs-attention-issue",
+            },
             {
               key: "severity",
               label: "Severity",
+              className: "needs-attention-severity",
               render: (row) => (
                 <span className={`severity severity-${row.severity}`}>{row.severity}</span>
               ),
             },
-            { key: "affectedFlow", label: "Affected agent", render: (row) => (
-              onOpenAgent ? (
-                <button type="button" className="table-action" onClick={() => onOpenAgent(row.flowId)}>
-                  {row.affectedFlow}
-                </button>
-              ) : (
-                row.affectedFlow
-              )
-            ) },
-            { key: "category", label: "Category" },
-            { key: "impact", label: "Impact" },
+            {
+              key: "affectedFlow",
+              label: "Affected agent",
+              className: "needs-attention-agent",
+              render: (row) =>
+                onOpenAgent ? (
+                  <button
+                    type="button"
+                    className="needs-attention-link"
+                    onClick={() => onOpenAgent(row.flowId)}
+                  >
+                    {row.affectedFlow}
+                  </button>
+                ) : (
+                  row.affectedFlow
+                ),
+            },
+            {
+              key: "category",
+              label: "Category",
+              className: "needs-attention-meta",
+            },
+            {
+              key: "impact",
+              label: "Impact",
+              className: "needs-attention-meta",
+            },
             {
               key: "nextAction",
               label: "Next action",
+              className: "needs-attention-action",
               render: (row) => (
-                <button type="button" className="table-action">{row.nextAction}</button>
+                <button type="button" className="needs-attention-link">
+                  {row.nextAction}
+                </button>
               ),
             },
           ]}

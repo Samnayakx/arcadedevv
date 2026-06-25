@@ -7,15 +7,15 @@ import { getFlowNodePresentation } from "./flowNodePresentation";
 function NodeIcon({ kind }: { kind: ReturnType<typeof getFlowNodePresentation>["kind"] }) {
   switch (kind) {
     case "agent":
-      return <Code size={13} weight="bold" className="flow-map-node-icon" />;
+      return <Code size={16} weight="bold" className="flow-map-node-icon" />;
     case "audit":
-      return <ListBullets size={13} weight="bold" className="flow-map-node-icon" />;
+      return <ListBullets size={16} weight="bold" className="flow-map-node-icon" />;
     case "auth":
-      return <Key size={13} weight="bold" className="flow-map-node-icon" />;
+      return <Key size={16} weight="bold" className="flow-map-node-icon" />;
     case "policy":
-      return <ShieldWarning size={13} weight="bold" className="flow-map-node-icon" />;
+      return <ShieldWarning size={16} weight="bold" className="flow-map-node-icon" />;
     default:
-      return <Code size={13} weight="bold" className="flow-map-node-icon" />;
+      return <Code size={16} weight="bold" className="flow-map-node-icon" />;
   }
 }
 
@@ -39,8 +39,8 @@ export function FlowMapNode({ data }: NodeProps<Node<FlowMapNodeData>>) {
             src={presentation.logoUrl}
             alt=""
             className="flow-map-node-logo"
-            width={14}
-            height={14}
+            width={18}
+            height={18}
             loading="lazy"
             decoding="async"
           />

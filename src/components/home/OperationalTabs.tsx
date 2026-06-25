@@ -46,7 +46,7 @@ export function OperationalTabs({
   project: MockProject;
   isEmpty: boolean;
 }) {
-  const { activeTab, setActiveTab, flowFilter, openTrace, setScreen } = useApp();
+  const { activeTab, setActiveTab, flowFilter, setFlowFilter, openTrace, openAgent, setScreen } = useApp();
 
   const flows =
     flowFilter === "all"
@@ -60,7 +60,7 @@ export function OperationalTabs({
   const audit = filterByFlow(project.audit, flowFilter) as AuditRecord[];
 
   return (
-    <div className="operational-tabs">
+    <div className="operational-tabs dashboard-card dashboard-card-fill">
       <div className="tab-bar">
         {TABS.map((tab) => (
           <button
@@ -99,9 +99,50 @@ export function OperationalTabs({
                 }
               />
             ) : (
-              <p className="dashboard-empty-copy">
-                Open <button type="button" className="table-action" onClick={() => setActiveTab("flows")}>Agents</button> in the sidebar for the full list view.
-              </p>
+              <DataTable
+                columns={[
+                  {
+                    key: "name",
+                    label: "Flow",
+                    className: "ops-table-primary",
+                    render: (flow) => (
+                      <button
+                        type="button"
+                        className="ops-table-link"
+                        onClick={() => openAgent(flow.id)}
+                      >
+                        {flow.name}
+                      </button>
+                    ),
+                  },
+                  { key: "type", label: "Type", className: "ops-table-meta" },
+                  {
+                    key: "tools",
+                    label: "Tools",
+                    className: "ops-table-meta",
+                    render: (flow) => <AppLogoList apps={flow.tools} />,
+                  },
+                  {
+                    key: "status",
+                    label: "Status",
+                    className: "ops-table-status",
+                    render: (flow) => <StatusBadge status={flow.status} small />,
+                  },
+                  { key: "lastRun", label: "Last run", className: "ops-table-meta" },
+                  {
+                    key: "runsToday",
+                    label: "Runs today",
+                    className: "ops-table-meta",
+                    render: (flow) => String(flow.runsToday),
+                  },
+                ]}
+                rows={flows}
+                onRowAction={(flow) => {
+                  setFlowFilter(flow.id);
+                  setActiveTab("runs");
+                }}
+                actionLabel="View runs"
+              />
             ))}
 
           {activeTab === "runs" &&
@@ -114,14 +155,14 @@ export function OperationalTabs({
             ) : (
               <DataTable
                 columns={[
-                  { key: "name", label: "Run" },
-                  { key: "flowName", label: "Flow" },
-                  { key: "triggeredBy", label: "Triggered by" },
-                  { key: "user", label: "User" },
-                  { key: "status", label: "Status", render: (r) => <StatusBadge status={r.status} small /> },
-                  { key: "toolsCalled", label: "Tools called", render: (r) => <AppLogoList apps={r.toolsCalled} /> },
-                  { key: "policyResult", label: "Policy result" },
-                  { key: "duration", label: "Duration", mono: true },
+                  { key: "name", label: "Run", className: "ops-table-primary" },
+                  { key: "flowName", label: "Flow", className: "ops-table-meta" },
+                  { key: "triggeredBy", label: "Triggered by", className: "ops-table-meta" },
+                  { key: "user", label: "User", className: "ops-table-meta" },
+                  { key: "status", label: "Status", className: "ops-table-status", render: (r) => <StatusBadge status={r.status} small /> },
+                  { key: "toolsCalled", label: "Tools called", className: "ops-table-meta", render: (r) => <AppLogoList apps={r.toolsCalled} /> },
+                  { key: "policyResult", label: "Policy result", className: "ops-table-meta" },
+                  { key: "duration", label: "Duration", className: "ops-table-meta", mono: true },
                 ]}
                 rows={runs}
                 onRowAction={(r) => openTrace(r.id)}

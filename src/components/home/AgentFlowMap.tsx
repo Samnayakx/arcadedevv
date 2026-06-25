@@ -89,7 +89,7 @@ function FlowCanvas({
   );
 
   return (
-    <div className="flow-canvas flow-canvas-react">
+    <div className="flow-canvas flow-canvas-react dot-grid-bg">
       <ReactFlow
         nodes={rfNodes}
         edges={rfEdges}
@@ -104,14 +104,15 @@ function FlowCanvas({
         zoomOnPinch={false}
         zoomOnDoubleClick={false}
         preventScrolling={false}
+        colorMode="dark"
         proOptions={{ hideAttribution: true }}
         className="flow-react-root"
       >
         <Background
           variant={BackgroundVariant.Dots}
-          gap={16}
-          size={1}
-          color="rgba(255,255,255,0.07)"
+          gap={18}
+          size={1.25}
+          color="rgba(255,255,255,0.14)"
         />
         <FitViewOnChange layoutKey={layoutKey} />
       </ReactFlow>
@@ -120,7 +121,7 @@ function FlowCanvas({
         <div className="flow-canvas-empty-hint">
           <div className="flow-map-node flow-map-node-binding">
             <div className="flow-map-node-inner">
-              <Plus size={13} weight="bold" />
+              <Plus size={16} weight="bold" />
               <span className="flow-map-node-title">Binding</span>
             </div>
           </div>

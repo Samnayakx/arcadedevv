@@ -5,8 +5,6 @@ import { LeftNav, TopBar } from "./components/chrome/AppChrome";
 import { AppFooter } from "./components/chrome/AppFooter";
 import { useApp } from "./context/AppContext";
 import { useSidebar } from "./hooks/useSidebar";
-import { CreateOrganization } from "./pages/CreateOrganization";
-import { CreateProject } from "./pages/CreateProject";
 import { BuildAgentFlow } from "./pages/BuildAgentFlow";
 import { GatewayFlow } from "./pages/GatewayFlow";
 import { GetStarted } from "./pages/GetStarted";
@@ -17,8 +15,6 @@ import { AgentDetail } from "./pages/AgentDetail";
 import { fadeIn } from "./app/motion";
 
 const ONBOARDING_SCREENS = new Set([
-  "create-organization",
-  "create-project",
   "get-started",
   "build",
   "gateway",
@@ -36,7 +32,7 @@ function MainContent() {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "g") {
         event.preventDefault();
-        setScreen("create-organization");
+        setScreen("get-started");
       }
     };
 
@@ -48,8 +44,6 @@ function MainContent() {
     return (
       <AnimatePresence mode="wait">
         <motion.div key={screen} className="onboarding-root" {...fadeIn}>
-          {screen === "create-organization" && <CreateOrganization />}
-          {screen === "create-project" && <CreateProject />}
           {screen === "get-started" && <GetStarted />}
           {screen === "build" && <BuildAgentFlow />}
           {screen === "gateway" && <GatewayFlow />}

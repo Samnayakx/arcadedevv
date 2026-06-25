@@ -64,7 +64,7 @@ export function SandboxFlow() {
                   {s.app}
                 </span>
                 <span className="chip">Risk: {s.risk}</span>
-                <span className="chip chip-green">Sandbox</span>
+                <span className="chip">Sandbox</span>
               </div>
             </button>
           ))}

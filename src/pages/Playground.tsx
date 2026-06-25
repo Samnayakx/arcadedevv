@@ -1,17 +1,15 @@
 import {
-  ArrowRight,
   ArrowUp,
   ClockCounterClockwise,
   Code,
   Plus,
   Warning,
 } from "@phosphor-icons/react";
+import clsx from "clsx";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { fadeUp } from "../app/motion";
-import { useApp } from "../context/AppContext";
 import { BrandLogo } from "../components/primitives/BrandLogo";
-import { Btn } from "../components/primitives/Btn";
 
 const TOOL_PREVIEW = ["Gmail", "Slack", "GitHub"];
 const TOOL_COUNT = 151;
@@ -68,69 +66,76 @@ function ToolsBadge({ compact }: { compact?: boolean }) {
 }
 
 export function Playground() {
-  const { setScreen } = useApp();
   const [mode, setMode] = useState<"chat" | "execute">("chat");
   const [message, setMessage] = useState("");
+  const canSend = message.trim().length > 0;
 
   const handlePromptClick = (prompt: (typeof prompts)[number]) => {
     setMessage(`${prompt.title} ${prompt.subtitle}`);
   };
 
   return (
-    <div className="playground-page">
+    <div className="playground-page dot-grid-bg">
       <header className="playground-toolbar">
-        <div className="playground-toolbar-left">
-          <div className="playground-mode-toggle" role="tablist" aria-label="Playground mode">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={mode === "chat"}
-              className={`playground-mode-btn${mode === "chat" ? " playground-mode-btn-active" : ""}`}
-              onClick={() => setMode("chat")}
-            >
-              Chat
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={mode === "execute"}
-              className={`playground-mode-btn${mode === "execute" ? " playground-mode-btn-active" : ""}`}
-              onClick={() => setMode("execute")}
-            >
-              <Code size={14} weight="regular" />
-              Execute
+        <div className="playground-shell playground-toolbar-inner">
+          <div className="playground-toolbar-group">
+            <div className="playground-mode-toggle" role="tablist" aria-label="Playground mode">
+              <button
+                type="button"
+                role="tab"
+                id="playground-tab-chat"
+                aria-selected={mode === "chat"}
+                aria-controls="playground-workspace"
+                className={clsx("playground-mode-btn", mode === "chat" && "playground-mode-btn-active")}
+                onClick={() => setMode("chat")}
+              >
+                Chat
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="playground-tab-execute"
+                aria-selected={mode === "execute"}
+                aria-controls="playground-workspace"
+                className={clsx(
+                  "playground-mode-btn",
+                  mode === "execute" && "playground-mode-btn-active",
+                )}
+                onClick={() => setMode("execute")}
+              >
+                <Code size={14} weight="regular" />
+                Execute
+              </button>
+            </div>
+
+            <button type="button" className="playground-new-chat">
+              <Plus size={14} weight="bold" />
+              New Chat
             </button>
           </div>
 
-          <button type="button" className="playground-new-chat">
-            <Plus size={14} weight="bold" />
-            New Chat
-          </button>
-
-          <ToolsBadge />
+          <div className="playground-toolbar-actions">
+            <ToolsBadge />
+            <button type="button" className="playground-history-btn">
+              <ClockCounterClockwise size={16} weight="regular" />
+              History
+            </button>
+          </div>
         </div>
-
-        <button type="button" className="playground-history-btn">
-          <ClockCounterClockwise size={16} weight="regular" />
-          History
-        </button>
       </header>
 
-      <motion.div className="playground-body" {...fadeUp}>
+      <motion.div
+        id="playground-workspace"
+        className="playground-body playground-shell"
+        role="tabpanel"
+        aria-labelledby={mode === "chat" ? "playground-tab-chat" : "playground-tab-execute"}
+        {...fadeUp}
+      >
         <section className="playground-hero">
           <h1>
             Hi, <span className="playground-hero-name">sambit nayak</span>
           </h1>
           <p>Explore how to call tools in your agent with Arcade.</p>
-          <Btn
-            variant="secondary"
-            size="sm"
-            className="playground-hero-cta"
-            onClick={() => setScreen("get-started")}
-          >
-            Start Building
-            <ArrowRight size={14} weight="bold" />
-          </Btn>
         </section>
 
         <div className="playground-prompts">
@@ -138,7 +143,7 @@ export function Playground() {
             <button
               key={prompt.id}
               type="button"
-              className="playground-prompt-card dashboard-card"
+              className="playground-prompt-card"
               onClick={() => handlePromptClick(prompt)}
             >
               <span className="playground-prompt-logo">
@@ -149,38 +154,43 @@ export function Playground() {
             </button>
           ))}
         </div>
-
-        <div className="playground-cap-banner" role="status">
-          <Warning size={16} weight="fill" className="playground-cap-icon" />
-          <div className="playground-cap-copy">
-            <strong>Tool selection capped</strong>
-            <span>
-              Using {TOOL_CAP} of {TOOL_COUNT} selected tools. Narrow the selection if you
-              need a specific tool.
-            </span>
-          </div>
-        </div>
       </motion.div>
 
       <footer className="playground-composer">
-        <div className="playground-composer-inner dashboard-card">
-          <textarea
-            className="playground-composer-input"
-            placeholder="Send a message..."
-            value={message}
-            onChange={(event) => setMessage(event.target.value)}
-            rows={3}
-          />
-          <div className="playground-composer-footer">
-            <ToolsBadge compact />
-            <button
-              type="button"
-              className="playground-send-btn"
-              aria-label="Send message"
-              disabled={!message.trim()}
-            >
-              <ArrowUp size={16} weight="bold" />
-            </button>
+        <div className="playground-shell">
+          <div
+            className="playground-composer-inner"
+            aria-describedby="playground-cap-hint"
+          >
+            <textarea
+              className="playground-composer-input"
+              placeholder="Send a message..."
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+              rows={3}
+            />
+            <div className="playground-composer-footer">
+              <div className="playground-composer-meta">
+                <ToolsBadge compact />
+                <p id="playground-cap-hint" className="playground-cap-hint" role="status">
+                  <Warning size={14} weight="fill" className="playground-cap-icon" aria-hidden />
+                  <span>
+                    Tool selection capped — using {TOOL_CAP} of {TOOL_COUNT} tools
+                  </span>
+                </p>
+              </div>
+              <button
+                type="button"
+                className={clsx(
+                  "playground-send-btn",
+                  canSend && "playground-send-btn-active btn btn-primary",
+                )}
+                aria-label="Send message"
+                disabled={!canSend}
+              >
+                <ArrowUp size={16} weight="bold" />
+              </button>
+            </div>
           </div>
         </div>
       </footer>

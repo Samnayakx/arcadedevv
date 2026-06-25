@@ -1,124 +1,120 @@
 import {
-  BookOpen,
-  CaretDown,
-  CaretRight,
-  ChartLineUp,
-  ClipboardText,
   Bell,
-  Command,
-  CreditCard,
-  Key,
-  MagicWand,
+  CaretUpDown,
+  Clock,
+  Gear,
+  Hash,
+  House,
   MagnifyingGlass,
-  Plugs,
-  PlugsConnected,
-  ShieldCheck,
+  MapTrifold,
+  Plus,
+  Question,
   Sidebar,
-  SquaresFour,
-  UsersThree,
-  Wrench,
+  Sparkle,
 } from "@phosphor-icons/react";
 import clsx from "clsx";
 import type { Icon } from "@phosphor-icons/react";
-import { useState, type MouseEvent, type ReactNode } from "react";
+import type { MouseEvent } from "react";
 import { useApp } from "../../context/AppContext";
 import { useCommandPalette } from "../../context/CommandPaletteContext";
 import type { SidebarViewport } from "../../hooks/useSidebar";
 import type { Screen, TabId } from "../../types";
+import profileAvatar from "../../assets/profile-avatar.png";
 import { ArcadeLogo } from "./ArcadeLogo";
 
 type NavTarget =
   | { kind: "tab"; tab: TabId }
   | { kind: "screen"; screen: Screen };
 
-type NavLeaf = {
-  id: string;
-  label: string;
-  target: NavTarget;
-  badge?: string;
-};
-
-type NavGroup = {
+type NavLink = {
   id: string;
   label: string;
   icon: Icon;
-  defaultOpen?: boolean;
-  children: NavLeaf[];
+  target: NavTarget;
+  primary?: boolean;
 };
 
-type NavEntry =
-  | { kind: "link"; id: string; label: string; icon: Icon; target: NavTarget; accentActive?: boolean }
-  | { kind: "group"; group: NavGroup };
-
-const BUILD_NAV: NavEntry[] = [
+const PRIMARY_NAV: NavLink[] = [
   {
-    kind: "link",
-    id: "agents",
-    label: "Agents",
-    icon: PlugsConnected,
-    target: { kind: "tab", tab: "flows" },
+    id: "home",
+    label: "Home",
+    icon: House,
+    target: { kind: "tab", tab: "dashboard" },
+    primary: true,
   },
   {
-    kind: "link",
-    id: "tools",
-    label: "Tools",
-    icon: Wrench,
-    target: { kind: "tab", tab: "tool-calls" },
-  },
-  {
-    kind: "link",
-    id: "playground",
+    id: "playground-top",
     label: "Playground",
-    icon: MagicWand,
+    icon: Sparkle,
     target: { kind: "screen", screen: "playground" },
-    accentActive: true,
+  },
+  {
+    id: "tool-catalog",
+    label: "Tool catalog",
+    icon: MagnifyingGlass,
+    target: { kind: "tab", tab: "tool-calls" },
   },
 ];
 
-const DEPLOY_NAV: NavEntry[] = [
+const BUILD_NAV: NavLink[] = [
   {
-    kind: "link",
+    id: "agents",
+    label: "Agents",
+    icon: Hash,
+    target: { kind: "tab", tab: "flows" },
+  },
+  {
+    id: "tools",
+    label: "Tools",
+    icon: Clock,
+    target: { kind: "tab", tab: "tool-calls" },
+  },
+  {
+    id: "playground-build",
+    label: "Playground",
+    icon: MapTrifold,
+    target: { kind: "screen", screen: "playground" },
+  },
+];
+
+const DEPLOY_NAV: NavLink[] = [
+  {
     id: "users-access",
-    label: "Users & Access",
-    icon: UsersThree,
+    label: "Users and Access",
+    icon: Hash,
     target: { kind: "tab", tab: "users" },
   },
   {
-    kind: "link",
     id: "policies",
     label: "Policies",
-    icon: ShieldCheck,
+    icon: Clock,
     target: { kind: "tab", tab: "policies" },
   },
   {
-    kind: "link",
     id: "connections",
     label: "Connections",
-    icon: Plugs,
+    icon: MapTrifold,
     target: { kind: "tab", tab: "auth" },
   },
 ];
 
-const OBSERVE_NAV: NavEntry[] = [
+const GOVERN_NAV: NavLink[] = [
   {
-    kind: "link",
     id: "runs",
     label: "Runs",
-    icon: ChartLineUp,
+    icon: Hash,
     target: { kind: "tab", tab: "runs" },
   },
   {
-    kind: "link",
     id: "logs",
     label: "Logs",
-    icon: ClipboardText,
+    icon: Clock,
     target: { kind: "tab", tab: "tool-calls" },
   },
   {
-    kind: "link",
-    id: "audit",
-    label: "Audit",
-    icon: ClipboardText,
+    id: "audits",
+    label: "Audits",
+    icon: MapTrifold,
     target: { kind: "tab", tab: "audit" },
   },
 ];
@@ -135,79 +131,49 @@ function isTargetActive(
       (activeTab === "flows" || screen === "agent-detail")
     );
   }
+  if (target.tab === "dashboard") {
+    return (screen === "active" || screen === "empty") && activeTab === "dashboard";
+  }
   return screen === "active" && activeTab === target.tab;
 }
 
-function NavCollapsible({
-  label,
-  icon: IconComponent,
-  defaultOpen = true,
+function NavLinkButton({
+  link,
   active,
-  children,
+  onNavigate,
 }: {
-  label: string;
-  icon: Icon;
-  defaultOpen?: boolean;
-  active?: boolean;
-  children: ReactNode;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-
-  return (
-    <div className="nav-collapsible">
-      <button
-        type="button"
-        className={clsx("nav-item", active && "nav-item-active")}
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-      >
-        <IconComponent size={16} weight={active ? "fill" : "regular"} />
-        <span className="nav-item-label">{label}</span>
-        {open ? (
-          <CaretDown size={12} className="nav-item-chevron" weight="bold" />
-        ) : (
-          <CaretRight size={12} className="nav-item-chevron" weight="bold" />
-        )}
-      </button>
-      {open && <ul className="nav-sublist">{children}</ul>}
-    </div>
-  );
-}
-
-function NavSubLink({
-  label,
-  active,
-  badge,
-  onClick,
-}: {
-  label: string;
+  link: NavLink;
   active: boolean;
-  badge?: string;
-  onClick: () => void;
+  onNavigate: (target: NavTarget) => void;
 }) {
+  const IconComponent = link.icon;
+
   return (
-    <li className="nav-sublist-item">
-      <button
-        type="button"
-        className={clsx("nav-subitem", active && "nav-subitem-active")}
-        onClick={onClick}
-      >
-        <span className="nav-item-label">{label}</span>
-        {badge && <span className="nav-badge">{badge}</span>}
-      </button>
-    </li>
+    <button
+      type="button"
+      className={clsx(
+        "nav-item",
+        link.primary && "nav-item-primary",
+        active && "nav-item-active",
+        active && link.primary && "nav-item-active-primary",
+      )}
+      onClick={() => onNavigate(link.target)}
+    >
+      <IconComponent size={16} weight={active ? "fill" : "regular"} />
+      <span className="nav-item-label">{link.label}</span>
+    </button>
   );
 }
 
 function NavSection({
   title,
-  entries,
+  links,
   screen,
   activeTab,
   onNavigate,
 }: {
   title: string;
-  entries: NavEntry[];
+  links: NavLink[];
   screen: Screen;
   activeTab: TabId;
   onNavigate: (target: NavTarget) => void;
@@ -215,53 +181,14 @@ function NavSection({
   return (
     <div className="nav-section">
       <div className="nav-section-label">{title}</div>
-      {entries.map((entry) => {
-        if (entry.kind === "link") {
-          const IconComponent = entry.icon;
-          const active = isTargetActive(entry.target, screen, activeTab);
-
-          return (
-            <button
-              key={entry.id}
-              type="button"
-              className={clsx(
-                "nav-item",
-                active && "nav-item-active",
-                active && entry.accentActive && "nav-item-active-accent",
-              )}
-              onClick={() => onNavigate(entry.target)}
-            >
-              <IconComponent size={16} weight={active ? "fill" : "regular"} />
-              <span className="nav-item-label">{entry.label}</span>
-            </button>
-          );
-        }
-
-        const { group } = entry;
-        const groupActive = group.children.some((child) =>
-          isTargetActive(child.target, screen, activeTab),
-        );
-
-        return (
-          <NavCollapsible
-            key={group.id}
-            label={group.label}
-            icon={group.icon}
-            defaultOpen={group.defaultOpen}
-            active={groupActive}
-          >
-            {group.children.map((child) => (
-              <NavSubLink
-                key={child.id}
-                label={child.label}
-                badge={child.badge}
-                active={isTargetActive(child.target, screen, activeTab)}
-                onClick={() => onNavigate(child.target)}
-              />
-            ))}
-          </NavCollapsible>
-        );
-      })}
+      {links.map((link) => (
+        <NavLinkButton
+          key={link.id}
+          link={link}
+          active={isTargetActive(link.target, screen, activeTab)}
+          onNavigate={onNavigate}
+        />
+      ))}
     </div>
   );
 }
@@ -288,9 +215,6 @@ export function LeftNav({
     onNavigate?.();
   };
 
-  const controlCenterActive =
-    (screen === "active" || screen === "empty") && activeTab === "dashboard";
-
   return (
     <nav className="left-nav">
       <div className="nav-logo">
@@ -304,18 +228,20 @@ export function LeftNav({
       </button>
 
       <div className="nav-scroll">
-        <button
-          type="button"
-          className={clsx("nav-item nav-item-top", controlCenterActive && "nav-item-active")}
-          onClick={() => navigate({ kind: "tab", tab: "dashboard" })}
-        >
-          <SquaresFour size={16} weight={controlCenterActive ? "fill" : "regular"} />
-          <span className="nav-item-label">Control Center</span>
-        </button>
+        <div className="nav-primary">
+          {PRIMARY_NAV.map((link) => (
+            <NavLinkButton
+              key={link.id}
+              link={link}
+              active={isTargetActive(link.target, screen, activeTab)}
+              onNavigate={navigate}
+            />
+          ))}
+        </div>
 
         <NavSection
           title="Build"
-          entries={BUILD_NAV}
+          links={BUILD_NAV}
           screen={screen}
           activeTab={activeTab}
           onNavigate={navigate}
@@ -323,15 +249,15 @@ export function LeftNav({
 
         <NavSection
           title="Deploy"
-          entries={DEPLOY_NAV}
+          links={DEPLOY_NAV}
           screen={screen}
           activeTab={activeTab}
           onNavigate={navigate}
         />
 
         <NavSection
-          title="Observe"
-          entries={OBSERVE_NAV}
+          title="Govern"
+          links={GOVERN_NAV}
           screen={screen}
           activeTab={activeTab}
           onNavigate={navigate}
@@ -339,28 +265,22 @@ export function LeftNav({
       </div>
 
       <div className="nav-footer">
-        <div className="nav-settings">
-          <div className="nav-section-label">Settings</div>
-          <button type="button" className="nav-item" onClick={() => navigate({ kind: "tab", tab: "usage" })}>
-            <CreditCard size={16} weight="regular" />
-            <span className="nav-item-label">Billing</span>
-          </button>
-          <button type="button" className="nav-item">
-            <BookOpen size={16} weight="regular" />
-            <span className="nav-item-label">Documentation</span>
-          </button>
-        </div>
-        <button type="button" className="nav-api-key-btn">
-          <Key size={16} weight="regular" />
-          <span className="nav-api-key-label">Get API key</span>
+        <button type="button" className="nav-item">
+          <Gear size={16} weight="regular" />
+          <span className="nav-item-label">Settings</span>
         </button>
-        <div className="nav-user">
-          <div className="nav-user-avatar">SN</div>
-          <div>
-            <div className="nav-user-name">Sambit Nayak</div>
-            <div className="nav-user-plan">Hobby Plan</div>
+        <button type="button" className="nav-item">
+          <Question size={16} weight="regular" />
+          <span className="nav-item-label">Documentation</span>
+        </button>
+        <button type="button" className="nav-user" aria-label="Account menu">
+          <img src={profileAvatar} alt="Sambit Nayak" className="nav-user-avatar" />
+          <div className="nav-user-info">
+            <span className="nav-user-name">Sambit Nayak</span>
+            <span className="nav-user-email">sam@example.com</span>
           </div>
-        </div>
+          <CaretUpDown size={14} weight="bold" className="nav-user-caret" />
+        </button>
       </div>
 
       {canResize && (
@@ -390,7 +310,6 @@ export function TopBar({
   sidebarViewport?: SidebarViewport;
 }) {
   const { setScreen } = useApp();
-  const { openPalette } = useCommandPalette();
 
   const sidebarToggleLabel =
     sidebarViewport === "desktop"
@@ -403,29 +322,28 @@ export function TopBar({
 
   return (
     <header className="top-bar top-bar-cms">
-      <div className="top-bar-cms-left">
-        <button
-          type="button"
-          className="top-bar-sidebar-toggle"
-          aria-label={sidebarToggleLabel}
-          aria-expanded={sidebarViewport === "desktop" ? !sidebarCollapsed : !!sidebarOpen}
-          onClick={onToggleSidebar}
-        >
-          <Sidebar size={18} weight="regular" />
-        </button>
-      </div>
+      <div className="top-bar-cms-inner">
+        <div className="top-bar-cms-left">
+          <button
+            type="button"
+            className="top-bar-sidebar-toggle"
+            aria-label={sidebarToggleLabel}
+            aria-expanded={sidebarViewport === "desktop" ? !sidebarCollapsed : !!sidebarOpen}
+            onClick={onToggleSidebar}
+          >
+            <Sidebar size={18} weight="regular" />
+          </button>
+        </div>
 
-      <div className="top-bar-cms-right">
-        <button type="button" className="top-bar-kbd-btn" aria-label="Command palette" onClick={openPalette}>
-          <Command size={14} weight="bold" />
-          <span>⌘K</span>
-        </button>
-        <button type="button" className="top-bar-icon-btn" aria-label="Notifications">
-          <Bell size={18} weight="regular" />
-        </button>
-        <button type="button" className="top-bar-link top-bar-link-cta" onClick={() => setScreen("get-started")}>
-          Create an agent flow
-        </button>
+        <div className="top-bar-cms-right">
+          <button type="button" className="top-bar-icon-btn" aria-label="Notifications">
+            <Bell size={18} weight="regular" />
+          </button>
+          <button type="button" className="btn btn-primary top-bar-cta" onClick={() => setScreen("playground")}>
+            <Plus size={16} weight="bold" aria-hidden />
+            <span>Create an agent flow</span>
+          </button>
+        </div>
       </div>
     </header>
   );

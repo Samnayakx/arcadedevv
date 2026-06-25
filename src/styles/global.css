@@ -56,9 +56,9 @@
   --nav-width: 240px;
   --nav-width-collapsed: 56px;
   --nav-pad-x: 16px;
-  --nav-pad-top: 24px;
-  --nav-pad-bottom: 20px;
-  --nav-logo-gap: 32px;
+  --nav-pad-top: 16px;
+  --nav-pad-bottom: 12px;
+  --nav-logo-gap: 20px;
   --nav-item-gap: 8px;
   --nav-item-pad-y: 10px;
   --nav-item-pad-x: 12px;
@@ -67,6 +67,22 @@
   --nav-section-gap: 16px;
   --nav-footer-gap: 16px;
   --topbar-height: 56px;
+  --content-max-width: 1280px;
+  --content-pad-x: 24px;
+  --playground-max-width: 880px;
+  --playground-surface: #030303;
+  --playground-surface-raised: #060606;
+  --playground-line: rgba(255, 255, 255, 0.06);
+
+  /* Sidebar depth — flat corners, same surface as dashboard */
+  --nav-radius: 0;
+  --nav-radius-sm: 0;
+  --nav-fill-gradient: linear-gradient(90deg, #000000 0%, #12081f 45%, #3b0764 100%);
+  --nav-fill-gradient-hover: linear-gradient(90deg, #050505 0%, #1a0a2e 45%, #4c1d95 100%);
+  --nav-inset: inset 0 2px 5px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  --nav-raised: 0 1px 2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --nav-raised-hover: 0 2px 6px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+
   --font: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-serif: Georgia, "Times New Roman", serif;
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;

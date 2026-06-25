@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 type VizTone = "violet" | "accent" | "warning" | "danger";
 
@@ -16,22 +16,17 @@ function MiniBars({
   values,
   tone,
   highlightLast,
-  activeIndex,
-  onHoverIndex,
 }: {
   values: number[];
   tone: VizTone;
   highlightLast?: boolean;
-  activeIndex: number | null;
-  onHoverIndex: (index: number | null) => void;
 }) {
   const max = Math.max(...values, 1);
 
   return (
-    <div className="kpi-viz kpi-viz-bars" onMouseLeave={() => onHoverIndex(null)}>
+    <div className="kpi-viz kpi-viz-bars">
       {values.map((value, index) => {
-        const highlighted =
-          activeIndex === index || (highlightLast && index === values.length - 1);
+        const highlighted = highlightLast && index === values.length - 1;
         return (
           <span
             key={index}
@@ -41,7 +36,6 @@ function MiniBars({
               highlighted && "kpi-viz-bar-active",
             )}
             style={{ height: `${(value / max) * 100}%` }}
-            onMouseEnter={() => onHoverIndex(index)}
           />
         );
       })}
@@ -100,39 +94,30 @@ export function KpiMiniViz({
   kind: "activeAgents" | "successRate" | "blockedUsers" | "criticalFailures";
   value: number;
 }) {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
   const config = useMemo(() => {
     switch (kind) {
       case "activeAgents":
         return {
           tone: "violet" as const,
           bars: deriveTrend(2, 8, value),
-          hint: "Agent count over the last 8 hours",
         };
       case "successRate":
         return {
           tone: "accent" as const,
           bars: deriveTrend(5, 10, value),
-          hint: "Successful tool calls vs total volume",
         };
       case "blockedUsers":
         return {
           tone: "warning" as const,
           bars: deriveTrend(7, 8, value),
-          hint: "Users waiting on auth or approval",
         };
       case "criticalFailures":
         return {
           tone: "danger" as const,
           bars: deriveTrend(11, 10, value),
-          hint: "High-severity failures in the last day",
         };
     }
   }, [kind, value]);
-
-  const activeValue =
-    activeIndex != null ? config.bars[activeIndex] : config.bars[config.bars.length - 1];
 
   return (
     <div className="kpi-viz-wrap">
@@ -143,18 +128,9 @@ export function KpiMiniViz({
             <MiniSparkline values={config.bars} tone={config.tone} />
           </>
         ) : (
-          <MiniBars
-            values={config.bars}
-            tone={config.tone}
-            highlightLast={activeIndex == null}
-            activeIndex={activeIndex}
-            onHoverIndex={setActiveIndex}
-          />
+          <MiniBars values={config.bars} tone={config.tone} highlightLast />
         )}
       </div>
-      <span className="kpi-viz-caption">
-        {activeIndex != null ? `Point ${activeIndex + 1}: ${activeValue}` : config.hint}
-      </span>
     </div>
   );
 }

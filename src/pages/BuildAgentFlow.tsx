@@ -152,7 +152,7 @@ export function BuildAgentFlow() {
               <div className="tool-action-meta">
                 <span className="chip">OAuth</span>
                 <span className="chip">Risk: {t.risk}</span>
-                <span className="chip chip-green">Sandbox</span>
+                <span className="chip">Sandbox</span>
               </div>
               <button type="button" className="btn btn-secondary btn-sm">
                 Connect {t.app}
