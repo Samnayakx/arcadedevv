@@ -286,7 +286,7 @@
   justify-content: space-between;
   gap: 16px;
   width: 100%;
-  max-width: var(--content-max-width);
+  max-width: none;
   height: 100%;
   margin: 0;
   padding: 0 var(--content-pad-x);
