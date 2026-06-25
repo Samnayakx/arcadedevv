@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import type { ProjectHealth, TabId } from "../../types";
 import { StatusBadge } from "../primitives/StatusBadge";
 
@@ -6,12 +5,10 @@ export function ProjectSummaryPanel({
   health,
   isEmpty,
   onSelectTab,
-  compact,
 }: {
   health: ProjectHealth;
   isEmpty?: boolean;
   onSelectTab?: (tab: TabId) => void;
-  compact?: boolean;
 }) {
   const items = [
     { label: "Status", value: <StatusBadge status={health.status} small /> },
@@ -22,31 +19,10 @@ export function ProjectSummaryPanel({
     { label: "Environment", value: health.environment },
   ];
 
-  const showActions = !isEmpty && onSelectTab;
-  const actions = showActions ? (
-    <div className={clsx("project-summary-actions", compact && "project-summary-actions-inline")}>
-      <button
-        type="button"
-        className="btn btn-secondary btn-sm"
-        onClick={() => onSelectTab("tool-calls")}
-      >
-        Logs
-      </button>
-      <button
-        type="button"
-        className="btn btn-secondary btn-sm"
-        onClick={() => onSelectTab("audit")}
-      >
-        Audits
-      </button>
-    </div>
-  ) : null;
-
   return (
-    <div className={clsx("project-summary dashboard-card", compact && "project-summary-compact")}>
+    <div className="project-summary dashboard-card">
       <div className="dashboard-card-head">
         <h3>{isEmpty ? "No agent flows yet" : "Project summary"}</h3>
-        {compact && actions}
       </div>
       {isEmpty && (
         <p className="summary-desc">
@@ -62,7 +38,24 @@ export function ProjectSummaryPanel({
           </div>
         ))}
       </dl>
-      {!compact && actions}
+      {!isEmpty && onSelectTab && (
+        <div className="project-summary-actions">
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={() => onSelectTab("tool-calls")}
+          >
+            Logs
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={() => onSelectTab("audit")}
+          >
+            Audits
+          </button>
+        </div>
+      )}
     </div>
   );
 }

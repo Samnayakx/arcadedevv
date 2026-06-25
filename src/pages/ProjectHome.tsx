@@ -134,20 +134,12 @@ export function ProjectHome() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <div className="dashboard-grid dashboard-grid-kpi-summary">
-            <ControlCenterKpis health={project.health} onSelectTab={setActiveTab} />
-            <ProjectSummaryPanel
-              health={project.health}
-              isEmpty={isEmpty}
-              onSelectTab={setActiveTab}
-              compact
-            />
-          </div>
+          <ControlCenterKpis health={project.health} onSelectTab={setActiveTab} />
         </motion.section>
       )}
 
-      {isFirstRun && (
-        <section className="dashboard-section">
+      <section className="dashboard-section">
+        {isFirstRun ? (
           <div className="dashboard-grid dashboard-grid-first-run">
             {traceRuns.length > 0 && (
               <ExecutionTraceMap
@@ -164,31 +156,30 @@ export function ProjectHome() {
               />
             </div>
           </div>
-        </section>
-      )}
-
-      {isPreRun && (
-        <section className="dashboard-section">
-          <div className="dashboard-grid dashboard-grid-3">
+        ) : (
+          <div
+            className={`dashboard-grid ${
+              isPreRun ? "dashboard-grid-3" : "dashboard-grid-summary-flow"
+            }`}
+          >
             <ProjectSummaryPanel
               health={project.health}
               isEmpty={isEmpty}
               onSelectTab={setActiveTab}
             />
-            <SetupCtaBanner compact variant="card" />
+            {traceRuns.length > 0 && isActive && (
+              <ExecutionTraceMap
+                runs={project.runs}
+                onOpenTrace={openTrace}
+                expanded
+              />
+            )}
+            {isPreRun && (
+              <SetupCtaBanner compact variant="card" />
+            )}
           </div>
-        </section>
-      )}
-
-      {isActive && traceRuns.length > 0 && (
-        <section className="dashboard-section">
-          <ExecutionTraceMap
-            runs={project.runs}
-            onOpenTrace={openTrace}
-            expanded
-          />
-        </section>
-      )}
+        )}
+      </section>
 
       {project.flows.length > 0 && (
         <section className="dashboard-section">
