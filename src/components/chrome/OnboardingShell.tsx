@@ -1,4 +1,4 @@
-import { BookOpen, Command, MagnifyingGlass } from "@phosphor-icons/react";
+import { BookOpen, Command } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 import { ArcadeLogo } from "./ArcadeLogo";
 import { Icon } from "../primitives/Icon";
@@ -37,14 +37,6 @@ export function OnboardingHeader({
       )}
       {!title && <div className="onboarding-header-center" />}
       <div className="onboarding-header-right">
-        <button type="button" className="onboarding-text-btn">
-          Feedback
-        </button>
-        <button type="button" className="onboarding-kbd-btn onboarding-search-btn" aria-label="Search">
-          <Icon icon={MagnifyingGlass} size="sm" />
-          <span>Search...</span>
-          <kbd>⌘K</kbd>
-        </button>
         <button type="button" className="onboarding-icon-btn" aria-label="Documentation">
           <Icon icon={BookOpen} size="lg" />
         </button>

@@ -7,24 +7,28 @@ import type {
   MockProject,
   PolicyRecord,
   ProjectUser,
+  Run,
   TabId,
   ToolCallHealth,
 } from "../../types";
 import { DataTable } from "../primitives/DataTable";
 import { Btn } from "../primitives/Btn";
-import { AppChip, AppChipList, ToolActionCell } from "../primitives/AppChip";
+import { AppChip, AppChipList, AppLogoList, ToolActionCell } from "../primitives/AppChip";
+import { StatusBadge } from "../primitives/StatusBadge";
 import { EmptyState, EmptyStateActions } from "../primitives/EmptyState";
 
 const TABS: { id: TabId; label: string }[] = [
+  { id: "runs", label: "Runs & Traces" },
   { id: "tool-calls", label: "Tool Calls" },
   { id: "users", label: "Users" },
   { id: "auth", label: "Auth" },
+  { id: "team", label: "Team" },
   { id: "policies", label: "Policies" },
   { id: "audit", label: "Audit" },
   { id: "usage", label: "Usage" },
 ];
 
-const DEFAULT_OPERATIONAL_TAB: TabId = "tool-calls";
+const DEFAULT_OPERATIONAL_TAB: TabId = "runs";
 
 function resolveOperationalTab(activeTab: TabId): TabId {
   return TABS.some((tab) => tab.id === activeTab) ? activeTab : DEFAULT_OPERATIONAL_TAB;
@@ -57,6 +61,7 @@ export function OperationalTabs({
   const auth = filterByFlow(project.auth, flowFilter) as AuthRecord[];
   const policies = filterByFlow(project.policies, flowFilter) as PolicyRecord[];
   const audit = filterByFlow(project.audit, flowFilter) as AuditRecord[];
+  const runs = filterByFlow(project.runs, flowFilter) as Run[];
 
   return (
     <div className="operational-tabs dashboard-card dashboard-card-fill">
@@ -83,6 +88,26 @@ export function OperationalTabs({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
+          {selectedTab === "runs" &&
+            (isEmpty || runs.length === 0 ? (
+              <EmptyState
+                title="No runs yet"
+                description="Every authorized tool call lands here with its full execution trace — acting user, scopes, policy decision, and result."
+              />
+            ) : (
+              <DataTable
+                columns={[
+                  { key: "name", label: "Run" },
+                  { key: "flowName", label: "Agent" },
+                  { key: "toolsCalled", label: "Tools", render: (r) => <AppLogoList apps={r.toolsCalled} /> },
+                  { key: "status", label: "Status", render: (r) => <StatusBadge status={r.status} small /> },
+                  { key: "duration", label: "Duration", mono: true },
+                  { key: "trace", label: "Trace", render: (r) => <Btn variant="link" size="sm" onClick={() => openTrace(r.id)}>View</Btn> },
+                ]}
+                rows={runs}
+              />
+            ))}
+
           {selectedTab === "tool-calls" &&
             (isEmpty ? (
               <div>
@@ -134,7 +159,7 @@ export function OperationalTabs({
               <EmptyState
                 title="No apps connected yet"
                 description="Connect an app when a tool needs user authorization."
-                actions={<EmptyStateActions primary="Connect first app" onPrimary={() => setScreen("sandbox")} />}
+                actions={<EmptyStateActions primary="Connect first app" onPrimary={() => setScreen("playground")} />}
               />
             ) : (
               <DataTable
@@ -152,6 +177,19 @@ export function OperationalTabs({
                 rows={auth}
               />
             ))}
+
+          {selectedTab === "team" && (
+            <EmptyState
+              title="Invite your team"
+              description="Add teammates to manage agents, authentication, policies, and audits together. Roles control who can deploy and who can only observe."
+              actions={
+                <EmptyStateActions
+                  primary="Invite teammates"
+                  onPrimary={() => setScreen("get-started")}
+                />
+              }
+            />
+          )}
 
           {selectedTab === "policies" &&
             (isEmpty || policies.length === 0 ? (

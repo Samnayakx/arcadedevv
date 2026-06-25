@@ -1,8 +1,8 @@
 export type Screen =
+  | "workspace"
   | "get-started"
   | "build"
   | "gateway"
-  | "sandbox"
   | "empty"
   | "active"
   | "playground"
@@ -15,6 +15,18 @@ export type ProjectMaturity =
   | "flow_no_auth"
   | "first_run"
   | "active";
+
+export type SetupStepKey =
+  | "framework_selected"
+  | "sdk_copied"
+  | "api_key_copied"
+  | "tool_action_selected"
+  | "auth_completed"
+  | "code_copied"
+  | "first_run_received"
+  | "trace_created";
+
+export type SetupState = Record<SetupStepKey, boolean>;
 
 export type FlowStatus =
   | "healthy"
@@ -40,6 +52,7 @@ export type TabId =
   | "tool-calls"
   | "users"
   | "auth"
+  | "team"
   | "policies"
   | "audit"
   | "usage";

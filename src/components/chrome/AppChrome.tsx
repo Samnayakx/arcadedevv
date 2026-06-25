@@ -1,21 +1,28 @@
 import {
   Bell,
   CaretUpDown,
-  Clock,
+  ChartBar,
+  Check,
+  ClipboardText,
   Gear,
-  Hash,
+  HardDrives,
   House,
+  Key,
   MagnifyingGlass,
-  MapTrifold,
-  Plus,
+  Pulse,
   Question,
+  Robot,
+  ShieldCheck,
   Sidebar,
   Sparkle,
+  Users,
+  UsersThree,
 } from "@phosphor-icons/react";
 import clsx from "clsx";
 import type { Icon } from "@phosphor-icons/react";
-import type { MouseEvent } from "react";
+import { useState, type MouseEvent } from "react";
 import { useApp } from "../../context/AppContext";
+import { API_KEY_PLACEHOLDER } from "../../data/mockProject";
 import { useCommandPalette } from "../../context/CommandPaletteContext";
 import type { SidebarViewport } from "../../hooks/useSidebar";
 import type { Screen, TabId } from "../../types";
@@ -45,8 +52,11 @@ const PRIMARY_NAV: NavLink[] = [
     target: { kind: "tab", tab: "dashboard" },
     primary: true,
   },
+];
+
+const BUILD_NAV: NavLink[] = [
   {
-    id: "playground-top",
+    id: "playground",
     label: "Playground",
     icon: Sparkle,
     target: { kind: "screen", screen: "playground" },
@@ -57,62 +67,65 @@ const PRIMARY_NAV: NavLink[] = [
     icon: MagnifyingGlass,
     target: { kind: "screen", screen: "tool-catalog" },
   },
-];
-
-const BUILD_NAV: NavLink[] = [
   {
     id: "agents",
     label: "Agents",
-    icon: Hash,
+    icon: Robot,
     target: { kind: "tab", tab: "flows" },
-  },
-  {
-    id: "tools",
-    label: "Tools",
-    icon: Clock,
-    target: { kind: "screen", screen: "tool-catalog" },
   },
 ];
 
-const DEPLOY_NAV: NavLink[] = [
+const ROLLOUT_NAV: NavLink[] = [
+  {
+    id: "servers",
+    label: "Servers",
+    icon: HardDrives,
+    target: { kind: "screen", screen: "gateway" },
+  },
   {
     id: "users-access",
-    label: "Users and Access",
-    icon: Hash,
+    label: "Users & Access",
+    icon: Users,
     target: { kind: "tab", tab: "users" },
+  },
+  {
+    id: "authentication",
+    label: "Authentication",
+    icon: Key,
+    target: { kind: "tab", tab: "auth" },
+  },
+  {
+    id: "team",
+    label: "Team",
+    icon: UsersThree,
+    target: { kind: "tab", tab: "team" },
   },
   {
     id: "policies",
     label: "Policies",
-    icon: Clock,
+    icon: ShieldCheck,
     target: { kind: "tab", tab: "policies" },
-  },
-  {
-    id: "connections",
-    label: "Connections",
-    icon: MapTrifold,
-    target: { kind: "tab", tab: "auth" },
   },
 ];
 
-const GOVERN_NAV: NavLink[] = [
+const OBSERVE_NAV: NavLink[] = [
   {
-    id: "runs",
-    label: "Runs",
-    icon: Hash,
+    id: "runs-traces",
+    label: "Runs & Traces",
+    icon: Pulse,
     target: { kind: "tab", tab: "runs" },
   },
   {
-    id: "logs",
-    label: "Logs",
-    icon: Clock,
-    target: { kind: "tab", tab: "tool-calls" },
+    id: "audit-logs",
+    label: "Audit Logs",
+    icon: ClipboardText,
+    target: { kind: "tab", tab: "audit" },
   },
   {
-    id: "audits",
-    label: "Audits",
-    icon: MapTrifold,
-    target: { kind: "tab", tab: "audit" },
+    id: "usage",
+    label: "Usage",
+    icon: ChartBar,
+    target: { kind: "tab", tab: "usage" },
   },
 ];
 
@@ -199,8 +212,20 @@ export function LeftNav({
   onResizeStart?: (event: MouseEvent) => void;
   canResize?: boolean;
 }) {
-  const { screen, setScreen, activeTab, setActiveTab } = useApp();
+  const { screen, setScreen, activeTab, setActiveTab, markSetupStep } = useApp();
   const { openPalette } = useCommandPalette();
+  const [apiKeyCopied, setApiKeyCopied] = useState(false);
+
+  const handleGetApiKey = async () => {
+    try {
+      await navigator.clipboard.writeText(API_KEY_PLACEHOLDER);
+    } catch {
+      // Clipboard may be unavailable — still advance setup state.
+    }
+    markSetupStep("api_key_copied");
+    setApiKeyCopied(true);
+    window.setTimeout(() => setApiKeyCopied(false), 1800);
+  };
 
   const navigate = (target: NavTarget) => {
     if (target.kind === "screen") {
@@ -245,16 +270,16 @@ export function LeftNav({
         />
 
         <NavSection
-          title="Deploy"
-          links={DEPLOY_NAV}
+          title="Roll out"
+          links={ROLLOUT_NAV}
           screen={screen}
           activeTab={activeTab}
           onNavigate={navigate}
         />
 
         <NavSection
-          title="Govern"
-          links={GOVERN_NAV}
+          title="Observe"
+          links={OBSERVE_NAV}
           screen={screen}
           activeTab={activeTab}
           onNavigate={navigate}
@@ -262,6 +287,18 @@ export function LeftNav({
       </div>
 
       <div className="nav-footer">
+        <button
+          type="button"
+          className={clsx("nav-item", "nav-item-key", apiKeyCopied && "nav-item-key-copied")}
+          onClick={handleGetApiKey}
+        >
+          {apiKeyCopied ? (
+            <Check size={16} weight="bold" />
+          ) : (
+            <Key size={16} weight="regular" />
+          )}
+          <span className="nav-item-label">{apiKeyCopied ? "API key copied" : "Get API key"}</span>
+        </button>
         <button type="button" className="nav-item">
           <Gear size={16} weight="regular" />
           <span className="nav-item-label">Settings</span>
@@ -304,7 +341,7 @@ export function TopBar({
   sidebarCollapsed?: boolean;
   sidebarViewport?: SidebarViewport;
 }) {
-  const { setScreen } = useApp();
+  const { setScreen, screen } = useApp();
 
   const sidebarToggleLabel =
     sidebarViewport === "desktop"
@@ -340,9 +377,15 @@ export function TopBar({
           <Btn type="button" variant="icon" size="sm" className="top-bar-icon-btn" aria-label="Notifications">
             <UiIcon icon={Bell} size="lg" />
           </Btn>
-          <Btn type="button" variant="primary" size="md" className="top-bar-cta" onClick={() => setScreen("get-started")}>
-            <UiIcon icon={Plus} size="md" weight="bold" aria-hidden />
-            <span>Create an agent flow</span>
+          <Btn
+            type="button"
+            variant={screen === "playground" ? "secondary" : "primary"}
+            size="md"
+            className="top-bar-cta"
+            onClick={() => setScreen("playground")}
+          >
+            <UiIcon icon={Sparkle} size="md" weight="bold" aria-hidden />
+            <span>Build</span>
           </Btn>
         </div>
       </div>

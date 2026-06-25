@@ -1,25 +1,27 @@
 import {
   ClockCounterClockwise,
-  Code,
   Plus,
+  TerminalWindow,
 } from "@phosphor-icons/react";
 import clsx from "clsx";
 import { useState } from "react";
+import { useApp } from "../context/AppContext";
 import { usePlaygroundSession } from "../hooks/usePlaygroundSession";
 import { PlaygroundChat } from "../components/playground/PlaygroundChat";
 import { PlaygroundExecuteView } from "../components/playground/PlaygroundExecuteView";
 import { PlaygroundHistoryDrawer } from "../components/playground/PlaygroundHistoryDrawer";
-import { PlaygroundStatusBar } from "../components/playground/PlaygroundStatusBar";
 import { PlaygroundToolPanel } from "../components/playground/PlaygroundToolPanel";
-import { PlaygroundTracePanel } from "../components/playground/PlaygroundTracePanel";
+import { PlaygroundVisibilityPanel } from "../components/playground/PlaygroundVisibilityPanel";
 import { Btn } from "../components/primitives/Btn";
 import { Icon } from "../components/primitives/Icon";
 
 export function Playground() {
   const [mode, setMode] = useState<"chat" | "execute">("chat");
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
 
-  const session = usePlaygroundSession();
+  const { onboardingGoal } = useApp();
+  const session = usePlaygroundSession(onboardingGoal);
 
   const handleNewSession = () => {
     session.resetSession();
@@ -30,18 +32,17 @@ export function Playground() {
     <div className="playground-page">
       <header className="playground-toolbar">
         <div className="playground-toolbar-inner">
-          <div className="playground-mode-toggle tab-bar" role="tablist" aria-label="Playground mode">
+          <div className="playground-mode-toggle" role="tablist" aria-label="Playground mode">
             <button
               type="button"
               role="tab"
               id="playground-tab-chat"
               aria-selected={mode === "chat"}
               aria-controls="playground-workspace"
-              className={clsx("tab", mode === "chat" && "active")}
+              className={clsx("playground-mode-tab", mode === "chat" && "active")}
               onClick={() => setMode("chat")}
             >
-              Test Prompt
-              {mode === "chat" && <span className="tab-underline" aria-hidden />}
+              Chat
             </button>
             <button
               type="button"
@@ -49,17 +50,15 @@ export function Playground() {
               id="playground-tab-execute"
               aria-selected={mode === "execute"}
               aria-controls="playground-workspace"
-              className={clsx("tab", mode === "execute" && "active")}
+              className={clsx("playground-mode-tab", mode === "execute" && "active")}
               onClick={() => setMode("execute")}
             >
-              <Icon icon={Code} size="sm" aria-hidden />
-              Run Agent
-              {mode === "execute" && <span className="tab-underline" aria-hidden />}
+              <Icon icon={TerminalWindow} size="sm" aria-hidden />
+              Execute
             </button>
           </div>
 
           <div className="playground-toolbar-meta">
-            <PlaygroundStatusBar compact />
             <Btn variant="ghost" size="sm" className="playground-toolbar-btn" onClick={handleNewSession}>
               <Icon icon={Plus} size="sm" weight="bold" />
               New Session
@@ -79,14 +78,19 @@ export function Playground() {
 
       <div
         id="playground-workspace"
-        className={clsx("playground-layout", mode === "execute" && "playground-layout-execute")}
+        className={clsx(
+          "playground-layout",
+          mode === "execute" && "playground-layout-execute",
+          mode === "chat" && !toolsOpen && "playground-layout-no-tools",
+        )}
         role="tabpanel"
         aria-labelledby={mode === "chat" ? "playground-tab-chat" : "playground-tab-execute"}
       >
-        {mode === "chat" && (
+        {mode === "chat" && toolsOpen && (
           <PlaygroundToolPanel
             onSelectTool={session.insertTool}
             selectedTool={session.selectedTool}
+            onClose={() => setToolsOpen(false)}
           />
         )}
 
@@ -98,7 +102,15 @@ export function Playground() {
             isRunning={session.isRunning}
             lastPrompt={session.lastPrompt}
             tracePreview={session.tracePreview}
+            seedSuggestions={session.seedSuggestions}
+            toolsOpen={toolsOpen}
+            onToggleTools={() => setToolsOpen((v) => !v)}
+            onInsertTool={session.insertTool}
+            runs={session.runs}
+            selectedRunId={session.selectedRunId}
+            onSelectRun={session.selectRun}
             onSend={() => session.sendMessage()}
+            onSendPrompt={(text) => session.sendMessage(text)}
             onPromptClick={session.handlePromptClick}
             onRunAgain={session.runAgain}
           />
@@ -115,9 +127,18 @@ export function Playground() {
         )}
 
         {mode === "chat" && (
-          <PlaygroundTracePanel
-            liveStatus={session.liveTraceStatus}
-            steps={session.traceSteps}
+          <PlaygroundVisibilityPanel
+            phase={session.visPhase}
+            liveStages={session.visStages}
+            liveToolAction={session.visToolAction}
+            liveAuth={session.visAuth}
+            onContinueAuth={session.continueAuthorization}
+            runs={session.runs}
+            selectedRunId={session.selectedRunId}
+            onSelectRun={session.selectRun}
+            goalTitle={session.goalTitle}
+            actingUser={session.actingUser}
+            environment={session.environment}
           />
         )}
       </div>
@@ -125,8 +146,10 @@ export function Playground() {
       <PlaygroundHistoryDrawer
         open={historyOpen}
         onClose={() => setHistoryOpen(false)}
-        onSelect={(prompt) => {
-          session.setMessage(prompt);
+        sessions={session.sessions}
+        onRestore={(id) => {
+          session.restoreSession(id);
+          setMode("chat");
         }}
       />
     </div>

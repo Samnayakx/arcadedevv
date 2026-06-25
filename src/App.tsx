@@ -11,16 +11,16 @@ import { GetStarted } from "./pages/GetStarted";
 import { ProjectHome } from "./pages/ProjectHome";
 import { Playground } from "./pages/Playground";
 import { ToolCatalog } from "./pages/ToolCatalog";
-import { SandboxFlow } from "./pages/SandboxFlow";
 import { AgentDetail } from "./pages/AgentDetail";
 import { DesignSystem } from "./pages/DesignSystem";
+import { WorkspaceSetup } from "./pages/WorkspaceSetup";
 import { fadeIn } from "./app/motion";
 
 const ONBOARDING_SCREENS = new Set([
+  "workspace",
   "get-started",
   "build",
   "gateway",
-  "sandbox",
 ]);
 const DASHBOARD_SCREENS = new Set(["empty", "active", "playground", "agent-detail", "tool-catalog", "design-system"]);
 
@@ -50,10 +50,10 @@ function MainContent() {
     return (
       <AnimatePresence mode="wait">
         <motion.div key={screen} className="onboarding-root" {...fadeIn}>
+          {screen === "workspace" && <WorkspaceSetup />}
           {screen === "get-started" && <GetStarted />}
           {screen === "build" && <BuildAgentFlow />}
           {screen === "gateway" && <GatewayFlow />}
-          {screen === "sandbox" && <SandboxFlow />}
         </motion.div>
       </AnimatePresence>
     );

@@ -224,7 +224,7 @@ export const CATALOG_INTEGRATIONS: CatalogIntegration[] = [
     category: "Developer",
     authType: "OAuth",
     toolCount: 87,
-    tools: ["GitHub.StarRepo", "GitHub.CreateIssue", "GitHub.ListPullRequests", "GitHub.GetFile"],
+    tools: ["GitHub.SetStarred", "GitHub.StarRepo", "GitHub.CreateIssue", "GitHub.ListPullRequests", "GitHub.GetFile"],
     connected: true,
   },
   {

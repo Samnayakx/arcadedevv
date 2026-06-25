@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useApp } from "../context/AppContext";
 import { getMockProject } from "../data/mockProject";
 import { AgentCardsPanel } from "../components/home/AgentCardsPanel";
+import { AgentSetupBanner } from "../components/home/AgentSetupBanner";
 import { ControlCenterKpis } from "../components/home/ControlCenterKpis";
 import {
   ControlCenterEmptyHero,
@@ -47,6 +48,7 @@ export function ProjectHome() {
     activeTab,
     openTrace,
     openAgent,
+    setupState,
   } = useApp();
 
   const isEmpty = maturity === "empty";
@@ -54,6 +56,10 @@ export function ProjectHome() {
   const isFirstRun = maturity === "first_run";
   const isSetupPhase = isPreRun || isFirstRun;
   const isActive = maturity === "active";
+
+  const waitingForFirstRun =
+    setupState.api_key_copied && !setupState.first_run_received;
+  const showSetupBanner = waitingForFirstRun && (isEmpty || isPreRun);
 
   const project = getMockProject(maturity);
   const traceRuns = project.runs.filter((run) => run.tracePreview);
@@ -75,6 +81,11 @@ export function ProjectHome() {
           </div>
           <MaturitySwitcher />
         </header>
+        {showSetupBanner && (
+          <section className="dashboard-section">
+            <AgentSetupBanner />
+          </section>
+        )}
         <ControlCenterEmptyHero />
         <TraceDrawer />
       </div>
@@ -99,6 +110,12 @@ export function ProjectHome() {
         <MaturitySwitcher />
       </header>
 
+      {showSetupBanner && (
+        <section className="dashboard-section">
+          <AgentSetupBanner />
+        </section>
+      )}
+
       {isPreRun && (
         <section className="dashboard-section">
           <SetupProgressChecklist maturity={maturity} />
@@ -117,12 +134,20 @@ export function ProjectHome() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <ControlCenterKpis health={project.health} onSelectTab={setActiveTab} />
+          <div className="dashboard-grid dashboard-grid-kpi-summary">
+            <ControlCenterKpis health={project.health} onSelectTab={setActiveTab} />
+            <ProjectSummaryPanel
+              health={project.health}
+              isEmpty={isEmpty}
+              onSelectTab={setActiveTab}
+              compact
+            />
+          </div>
         </motion.section>
       )}
 
-      <section className="dashboard-section">
-        {isFirstRun ? (
+      {isFirstRun && (
+        <section className="dashboard-section">
           <div className="dashboard-grid dashboard-grid-first-run">
             {traceRuns.length > 0 && (
               <ExecutionTraceMap
@@ -139,30 +164,31 @@ export function ProjectHome() {
               />
             </div>
           </div>
-        ) : (
-          <div
-            className={`dashboard-grid ${
-              isPreRun ? "dashboard-grid-3" : "dashboard-grid-summary-flow"
-            }`}
-          >
+        </section>
+      )}
+
+      {isPreRun && (
+        <section className="dashboard-section">
+          <div className="dashboard-grid dashboard-grid-3">
             <ProjectSummaryPanel
               health={project.health}
               isEmpty={isEmpty}
               onSelectTab={setActiveTab}
             />
-            {traceRuns.length > 0 && isActive && (
-              <ExecutionTraceMap
-                runs={project.runs}
-                onOpenTrace={openTrace}
-                expanded
-              />
-            )}
-            {isPreRun && (
-              <SetupCtaBanner compact variant="card" />
-            )}
+            <SetupCtaBanner compact variant="card" />
           </div>
-        )}
-      </section>
+        </section>
+      )}
+
+      {isActive && traceRuns.length > 0 && (
+        <section className="dashboard-section">
+          <ExecutionTraceMap
+            runs={project.runs}
+            onOpenTrace={openTrace}
+            expanded
+          />
+        </section>
+      )}
 
       {project.flows.length > 0 && (
         <section className="dashboard-section">

@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Copy, ArrowSquareOut } from "@phosphor-icons/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Check, Copy, ArrowSquareOut } from "@phosphor-icons/react";
 import { FlowStepNav } from "../components/flows/FlowStepNav";
 import { FlowShell } from "../components/flows/FlowShell";
 import { LiveTracePanel } from "../components/flows/LiveTracePanel";
@@ -7,6 +7,27 @@ import { BrandLogo } from "../components/primitives/BrandLogo";
 import { useApp } from "../context/AppContext";
 import { API_KEY_PLACEHOLDER, SDK_INSTALL } from "../data/mockProject";
 import { StatusBadge } from "../components/primitives/StatusBadge";
+import type { SetupState, SetupStepKey } from "../types";
+
+const RUN_CODE = `import { Arcade } from "@arcadeai/arcade";
+
+const client = new Arcade({ apiKey: process.env.ARCADE_API_KEY });
+
+const result = await client.tools.execute({
+  tool: "GitHub.CreateIssue",
+  userId: "user_alex",
+  input: { title: "CSV export bug", body: "..." },
+});`;
+
+function initialStep(s: SetupState): number {
+  if (s.first_run_received || s.trace_created) return 7;
+  if (s.code_copied || s.auth_completed) return 6;
+  if (s.tool_action_selected) return 5;
+  if (s.api_key_copied) return 4;
+  if (s.sdk_copied) return 3;
+  if (s.framework_selected) return 2;
+  return 0;
+}
 
 const STEPS = [
   { id: "framework", label: "Framework" },
@@ -39,14 +60,46 @@ const TOOL_ACTIONS = [
 ];
 
 export function BuildAgentFlow() {
-  const { setScreen, finishFlow, playgroundPrompt, setPlaygroundPrompt } = useApp();
-  const [step, setStep] = useState(0);
+  const {
+    setScreen,
+    finishFlow,
+    playgroundPrompt,
+    setPlaygroundPrompt,
+    setupState,
+    markSetupStep,
+  } = useApp();
+  const [step, setStep] = useState(() => initialStep(setupState));
   const [framework, setFramework] = useState("LangChain");
   const [pm, setPm] = useState("npm");
+  const [copied, setCopied] = useState<SetupStepKey | null>(null);
+
   const goBack = () => {
     setPlaygroundPrompt(null);
     setScreen("get-started");
   };
+
+  const handleCopy = useCallback(
+    async (text: string, key: SetupStepKey) => {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        // Clipboard may be unavailable (insecure context) — still track intent.
+      }
+      markSetupStep(key);
+      setCopied(key);
+    },
+    [markSetupStep],
+  );
+
+  useEffect(() => {
+    if (!copied) return;
+    const timer = window.setTimeout(() => setCopied(null), 1600);
+    return () => window.clearTimeout(timer);
+  }, [copied]);
+
+  useEffect(() => {
+    if (step >= 7) markSetupStep("trace_created");
+  }, [step, markSetupStep]);
 
   const traceSteps =
     step >= 7
@@ -76,7 +129,10 @@ export function BuildAgentFlow() {
               key={f}
               type="button"
               className={`option-card ${framework === f ? "selected" : ""}`}
-              onClick={() => setFramework(f)}
+              onClick={() => {
+                setFramework(f);
+                markSetupStep("framework_selected");
+              }}
             >
               <span className="option-card-label">
                 <BrandLogo name={f} size={14} />
@@ -88,7 +144,15 @@ export function BuildAgentFlow() {
         <a href="https://docs.arcade.dev" className="advanced-link" target="_blank" rel="noreferrer">
           Advanced: build a custom MCP server <ArrowSquareOut size={14} />
         </a>
-        <FlowStepNav step={0} setStep={setStep} max={STEPS.length - 1} />
+        <FlowStepNav
+          step={0}
+          setStep={setStep}
+          max={STEPS.length - 1}
+          onNext={() => {
+            markSetupStep("framework_selected");
+            setStep(1);
+          }}
+        />
       </div>,
       <div key="env" className="step-panel">
         <h3>Environment</h3>
@@ -124,8 +188,12 @@ export function BuildAgentFlow() {
         </div>
         <div className="code-block">
           <code className="mono">{SDK_INSTALL}</code>
-          <button type="button" aria-label="Copy">
-            <Copy size={16} />
+          <button
+            type="button"
+            aria-label="Copy install command"
+            onClick={() => handleCopy(SDK_INSTALL, "sdk_copied")}
+          >
+            {copied === "sdk_copied" ? <Check size={16} weight="bold" /> : <Copy size={16} />}
           </button>
         </div>
         <FlowStepNav step={2} setStep={setStep} max={STEPS.length - 1} />
@@ -135,8 +203,12 @@ export function BuildAgentFlow() {
         <p>Credentials and OAuth tokens stay inside Arcade.</p>
         <div className="code-block">
           <code className="mono">{API_KEY_PLACEHOLDER}</code>
-          <button type="button" aria-label="Copy">
-            <Copy size={16} />
+          <button
+            type="button"
+            aria-label="Copy API key"
+            onClick={() => handleCopy(API_KEY_PLACEHOLDER, "api_key_copied")}
+          >
+            {copied === "api_key_copied" ? <Check size={16} weight="bold" /> : <Copy size={16} />}
           </button>
         </div>
         <button type="button" className="text-link">
@@ -162,7 +234,11 @@ export function BuildAgentFlow() {
                 <span className="chip">Risk: {t.risk}</span>
                 <span className="chip">Sandbox</span>
               </div>
-              <button type="button" className="btn btn-secondary btn-sm">
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => markSetupStep("tool_action_selected")}
+              >
                 Connect {t.app}
               </button>
             </div>
@@ -182,29 +258,34 @@ export function BuildAgentFlow() {
           setStep={setStep}
           max={STEPS.length - 1}
           nextLabel="Authorize GitHub"
-          onNext={() => setStep(6)}
+          onNext={() => {
+            markSetupStep("auth_completed");
+            setStep(6);
+          }}
         />
       </div>,
       <div key="run" className="step-panel">
         <h3>Run locally</h3>
         <p>Framework: {framework}</p>
         <div className="code-block code-block-tall">
-          <pre className="mono">{`import { Arcade } from "@arcadeai/arcade";
-
-const client = new Arcade({ apiKey: process.env.ARCADE_API_KEY });
-
-const result = await client.tools.execute({
-  tool: "GitHub.CreateIssue",
-  userId: "user_alex",
-  input: { title: "CSV export bug", body: "..." },
-});`}</pre>
+          <pre className="mono">{RUN_CODE}</pre>
+          <button
+            type="button"
+            aria-label="Copy code"
+            onClick={() => handleCopy(RUN_CODE, "code_copied")}
+          >
+            {copied === "code_copied" ? <Check size={16} weight="bold" /> : <Copy size={16} />}
+          </button>
         </div>
         <FlowStepNav
           step={6}
           setStep={setStep}
           max={STEPS.length - 1}
           nextLabel="Run locally"
-          onNext={() => setStep(7)}
+          onNext={() => {
+            markSetupStep("first_run_received");
+            setStep(7);
+          }}
         />
       </div>,
       <div key="trace" className="step-panel step-success">
@@ -225,7 +306,7 @@ const result = await client.tools.execute({
         <FlowStepNav step={7} setStep={setStep} max={STEPS.length - 1} hideNext />
       </div>,
     ],
-    [framework, pm, playgroundPrompt],
+    [framework, pm, playgroundPrompt, copied, handleCopy, markSetupStep],
   );
 
   return (

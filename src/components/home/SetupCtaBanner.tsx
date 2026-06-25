@@ -80,7 +80,7 @@ export function SetupCtaBanner({
             <button
               type="button"
               className="btn btn-secondary"
-              onClick={() => (mode === "firstRun" && onViewTrace ? onViewTrace() : setScreen("sandbox"))}
+              onClick={() => (mode === "firstRun" && onViewTrace ? onViewTrace() : setScreen("playground"))}
             >
               {copy.secondary}
             </button>

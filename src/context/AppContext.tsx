@@ -6,7 +6,18 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { ProjectMaturity, Screen, TabId } from "../types";
+import type { ProjectMaturity, Screen, SetupState, SetupStepKey, TabId } from "../types";
+
+const INITIAL_SETUP_STATE: SetupState = {
+  framework_selected: false,
+  sdk_copied: false,
+  api_key_copied: false,
+  tool_action_selected: false,
+  auth_completed: false,
+  code_copied: false,
+  first_run_received: false,
+  trace_created: false,
+};
 
 interface AppContextValue {
   screen: Screen;
@@ -19,6 +30,8 @@ interface AppContextValue {
   organizationName: string;
   projectName: string;
   playgroundPrompt: string | null;
+  onboardingGoal: string | null;
+  setupState: SetupState;
   setScreen: (screen: Screen) => void;
   setMaturity: (m: ProjectMaturity) => void;
   setActiveTab: (tab: TabId) => void;
@@ -26,6 +39,10 @@ interface AppContextValue {
   setOrganizationName: (name: string) => void;
   setProjectName: (name: string) => void;
   setPlaygroundPrompt: (prompt: string | null) => void;
+  setOnboardingGoal: (goalId: string | null) => void;
+  markSetupStep: (key: SetupStepKey) => void;
+  resetSetupState: () => void;
+  completeWorkspaceSetup: () => void;
   openTrace: (runId: string) => void;
   closeTrace: () => void;
   openAgent: (agentId: string) => void;
@@ -38,7 +55,7 @@ interface AppContextValue {
 const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [screen, setScreen] = useState<Screen>("get-started");
+  const [screen, setScreen] = useState<Screen>("workspace");
   const [maturity, setMaturityState] = useState<ProjectMaturity>("empty");
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
   const [flowFilter, setFlowFilter] = useState("all");
@@ -48,6 +65,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [organizationName, setOrganizationName] = useState("sambit's org");
   const [projectName, setProjectName] = useState("Default project");
   const [playgroundPrompt, setPlaygroundPrompt] = useState<string | null>(null);
+  const [onboardingGoal, setOnboardingGoal] = useState<string | null>(null);
+  const [setupState, setSetupState] = useState<SetupState>(INITIAL_SETUP_STATE);
+
+  const markSetupStep = useCallback((key: SetupStepKey) => {
+    setSetupState((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
+  }, []);
+
+  const resetSetupState = useCallback(() => {
+    setSetupState(INITIAL_SETUP_STATE);
+  }, []);
+
+  const completeWorkspaceSetup = useCallback(() => {
+    setScreen("get-started");
+  }, []);
 
   const setMaturity = useCallback((next: ProjectMaturity) => {
     setMaturityState(next);
@@ -106,6 +137,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       organizationName,
       projectName,
       playgroundPrompt,
+      onboardingGoal,
+      setupState,
       setScreen,
       setMaturity,
       setActiveTab,
@@ -113,6 +146,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setOrganizationName,
       setProjectName,
       setPlaygroundPrompt,
+      setOnboardingGoal,
+      markSetupStep,
+      resetSetupState,
+      completeWorkspaceSetup,
       openTrace,
       closeTrace,
       openAgent,
@@ -132,6 +169,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       organizationName,
       projectName,
       playgroundPrompt,
+      onboardingGoal,
+      setupState,
+      markSetupStep,
+      resetSetupState,
+      completeWorkspaceSetup,
       finishFlow,
       exploreDashboard,
       deployFromPlayground,

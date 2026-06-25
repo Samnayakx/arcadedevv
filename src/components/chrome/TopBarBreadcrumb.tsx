@@ -16,12 +16,13 @@ function getCurrentPageLabel(screen: Screen, activeTab: TabId): string {
   const tabLabels: Record<TabId, string> = {
     dashboard: "Dashboard",
     flows: "Agents",
-    runs: "Runs",
+    runs: "Runs & Traces",
     "tool-calls": "Tool Calls",
-    users: "Users and Access",
-    auth: "Connections",
+    users: "Users & Access",
+    auth: "Authentication",
+    team: "Team",
     policies: "Policies",
-    audit: "Audits",
+    audit: "Audit Logs",
     usage: "Usage",
   };
 

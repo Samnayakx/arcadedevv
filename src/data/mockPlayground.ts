@@ -6,6 +6,8 @@ export interface PlaygroundTool {
   id: string;
   app: string;
   action: string;
+  displayName?: string;
+  version?: string;
   category: Exclude<ToolCategory, "All">;
   connected: boolean;
   needsAuth?: boolean;
@@ -17,6 +19,15 @@ export interface PlaygroundToolParam {
   required: boolean;
   placeholder?: string;
   defaultValue?: string;
+  type?: "string" | "boolean";
+  helperText?: string;
+}
+
+export interface PlaygroundToolRequirements {
+  oauthProvider: string;
+  oauthConfigured: boolean;
+  secretsConfigured: boolean;
+  secrets: string[];
 }
 
 export interface PlaygroundToolDefinition {
@@ -93,13 +104,43 @@ export const PLAYGROUND_TOOLS: PlaygroundTool[] = [
   { id: "t4", app: "Slack", action: "Slack.SendMessage", category: "Communication", connected: true, needsAuth: true },
   { id: "t5", app: "LinkedIn", action: "LinkedIn.CreatePost", category: "Communication", connected: true },
   { id: "t6", app: "Calendar", action: "Calendar.ListEvents", category: "Productivity", connected: true },
-  { id: "t7", app: "GitHub", action: "GitHub.StarRepo", category: "DevOps", connected: true },
+  { id: "t7", app: "GitHub", action: "GitHub.SetStarred", displayName: "SetStarred", version: "4.1.0", category: "DevOps", connected: true },
+  { id: "t7b", app: "GitHub", action: "GitHub.StarRepo", category: "DevOps", connected: true },
   { id: "t8", app: "GitHub", action: "GitHub.CreateIssue", category: "DevOps", connected: true },
   { id: "t9", app: "Linear", action: "Linear.CreateIssue", category: "DevOps", connected: true },
   { id: "t10", app: "HubSpot", action: "HubSpot.SearchContacts", category: "CRM", connected: true, needsAuth: true },
   { id: "t11", app: "Salesforce", action: "Salesforce.UpdateRecord", category: "CRM", connected: true, needsAuth: true },
   { id: "t12", app: "Zendesk", action: "Zendesk.CreateTicket", category: "CRM", connected: true },
   { id: "t13", app: "Notion", action: "Notion.CreatePage", category: "Productivity", connected: true },
+  { id: "t16", app: "Gmail", action: "Gmail.SendEmail", category: "Communication", connected: true },
+  { id: "t17", app: "Gmail", action: "Gmail.CreateDraft", category: "Communication", connected: true },
+  { id: "t18", app: "Slack", action: "Slack.GetMessages", category: "Communication", connected: true },
+  { id: "t19", app: "Slack", action: "Slack.SetStatus", category: "Communication", connected: true },
+  { id: "t20", app: "GitHub", action: "GitHub.ListPullRequests", category: "DevOps", connected: true },
+  { id: "t21", app: "GitHub", action: "GitHub.MergePullRequest", category: "DevOps", connected: true, needsAuth: true },
+  { id: "t22", app: "GitHub", action: "GitHub.AddComment", category: "DevOps", connected: true },
+  { id: "t23", app: "Linear", action: "Linear.UpdateIssue", category: "DevOps", connected: true },
+  { id: "t24", app: "Linear", action: "Linear.ListIssues", category: "DevOps", connected: true },
+  { id: "t25", app: "Notion", action: "Notion.SearchPages", category: "Productivity", connected: true },
+  { id: "t26", app: "Notion", action: "Notion.AppendBlock", category: "Productivity", connected: true },
+  { id: "t27", app: "Asana", action: "Asana.CreateTask", category: "Productivity", connected: true },
+  { id: "t28", app: "Asana", action: "Asana.ListTasks", category: "Productivity", connected: true },
+  { id: "t29", app: "Calendar", action: "Calendar.CreateEvent", category: "Productivity", connected: true, needsAuth: true },
+  { id: "t30", app: "Drive", action: "Drive.SearchFiles", category: "Productivity", connected: true },
+  { id: "t31", app: "Drive", action: "Drive.UploadFile", category: "Productivity", connected: true },
+  { id: "t32", app: "Dropbox", action: "Dropbox.ListFiles", category: "Productivity", connected: true },
+  { id: "t33", app: "Figma", action: "Figma.GetFile", category: "Productivity", connected: true },
+  { id: "t34", app: "Airtable", action: "Airtable.CreateRecord", category: "Productivity", connected: true },
+  { id: "t35", app: "Airtable", action: "Airtable.ListRecords", category: "Productivity", connected: true },
+  { id: "t36", app: "HubSpot", action: "HubSpot.CreateDeal", category: "CRM", connected: true },
+  { id: "t37", app: "Salesforce", action: "Salesforce.CreateLead", category: "CRM", connected: true, needsAuth: true },
+  { id: "t38", app: "Zendesk", action: "Zendesk.UpdateTicket", category: "CRM", connected: true },
+  { id: "t39", app: "Intercom", action: "Intercom.SendMessage", category: "Communication", connected: true },
+  { id: "t40", app: "Twilio", action: "Twilio.SendSMS", category: "Communication", connected: true },
+  { id: "t41", app: "Stripe", action: "Stripe.CreateInvoice", category: "CRM", connected: true },
+  { id: "t42", app: "Datadog", action: "Datadog.QueryMetrics", category: "DevOps", connected: true },
+  { id: "t43", app: "MongoDB", action: "MongoDB.FindDocuments", category: "DevOps", connected: true },
+  { id: "t44", app: "Snowflake", action: "Snowflake.RunQuery", category: "DevOps", connected: true },
   { id: "t14", app: "Jira", action: "Jira.CreateIssue", category: "DevOps", connected: false },
   { id: "t15", app: "Stripe", action: "Stripe.CreateRefund", category: "CRM", connected: false },
 ];
@@ -157,24 +198,24 @@ export const PLAYGROUND_TRACE_SCENARIOS: Record<string, TraceScenario> = {
   },
   "github-star": {
     id: "github-star",
-    toolAction: "GitHub.StarRepo",
+    toolAction: "GitHub.SetStarred",
     assistantResult: "Starred arcadeai/arcade-mcp on GitHub. Your account now follows this repository.",
     tracePreview: {
       userPrompt: "Star the arcadeai/arcade-mcp repo on GitHub",
       agentReasoning: "Simple repo star action — verify OAuth scopes and execute.",
-      toolCalls: ["GitHub.StarRepo"],
+      toolCalls: ["GitHub.SetStarred"],
       result: "Repository starred successfully",
     },
     steps: [
       { label: "Thinking…", icon: "user", delayMs: 400 },
-      { label: "Selecting tool: GitHub.StarRepo", icon: "bolt", delayMs: 600 },
+      { label: "Selecting tool: GitHub.SetStarred", icon: "bolt", delayMs: 600 },
       { label: "Authenticating user", icon: "key", delayMs: 800 },
-      { label: "Executing GitHub.StarRepo", icon: "bolt", delayMs: 1000 },
+      { label: "Executing GitHub.SetStarred", icon: "bolt", delayMs: 1000 },
       { label: "Audit log saved", icon: "shield", delayMs: 400 },
       { label: "Success — repo starred", icon: "check", delayMs: 500 },
     ],
     sdkSnippet: `const result = await client.tools.execute({
-  tool: "GitHub.StarRepo",
+  tool: "GitHub.SetStarred",
   userId: "user_sambit",
   input: { owner: "arcadeai", repo: "arcade-mcp" },
 });`,
@@ -299,6 +340,36 @@ export const PLAYGROUND_TOOL_DEFINITIONS: Record<string, PlaygroundToolDefinitio
     ],
     expectedOutput: "Message timestamp and channel confirmation object.",
   },
+  "GitHub.SetStarred": {
+    description: "Star or unstar a GitHub repository for the authenticated user.",
+    params: [
+      {
+        name: "owner",
+        label: "owner",
+        required: true,
+        placeholder: "arcadeai",
+        defaultValue: "arcadeai",
+        helperText: "The owner of the repository",
+      },
+      {
+        name: "name",
+        label: "name",
+        required: true,
+        placeholder: "arcade-mcp",
+        defaultValue: "arcade-mcp",
+        helperText: "The name of the repository",
+      },
+      {
+        name: "starred",
+        label: "starred",
+        required: false,
+        type: "boolean",
+        defaultValue: "true",
+        helperText: "Whether to star the repository or not. Default is True.",
+      },
+    ],
+    expectedOutput: "Result of starring/unstarring operation",
+  },
   "GitHub.StarRepo": {
     description: "Star a GitHub repository for the authenticated user account.",
     params: [
@@ -341,6 +412,108 @@ export function scenarioForTool(toolAction: string): TraceScenario {
   );
   if (match) return match;
   return { ...PLAYGROUND_TRACE_SCENARIOS.default, toolAction };
+}
+
+export const PLAYGROUND_TOOL_REQUIREMENTS: Record<string, PlaygroundToolRequirements> = {
+  "GitHub.SetStarred": {
+    oauthProvider: "github",
+    oauthConfigured: true,
+    secretsConfigured: true,
+    secrets: ["GITHUB_SERVER_URL"],
+  },
+  "GitHub.StarRepo": {
+    oauthProvider: "github",
+    oauthConfigured: true,
+    secretsConfigured: true,
+    secrets: ["GITHUB_SERVER_URL"],
+  },
+};
+
+const DEFAULT_TOOL_REQUIREMENTS: PlaygroundToolRequirements = {
+  oauthProvider: "oauth",
+  oauthConfigured: true,
+  secretsConfigured: true,
+  secrets: [],
+};
+
+export function getPlaygroundToolRequirements(action: string): PlaygroundToolRequirements {
+  return PLAYGROUND_TOOL_REQUIREMENTS[action] ?? DEFAULT_TOOL_REQUIREMENTS;
+}
+
+export type VisibilityStageId =
+  | "intent"
+  | "tool_selected"
+  | "authorization"
+  | "scope_check"
+  | "policy_check"
+  | "tool_execution"
+  | "result"
+  | "audit";
+
+export interface VisibilityStageDef {
+  id: VisibilityStageId;
+  title: string;
+  runningLabel: string;
+  doneLabel: string;
+  icon: "user" | "key" | "bolt" | "shield" | "check";
+  durationMs: number;
+}
+
+export const EXECUTION_PIPELINE: VisibilityStageDef[] = [
+  { id: "intent", title: "User intent received", runningLabel: "Parsing user intent", doneLabel: "User verified", icon: "user", durationMs: 600 },
+  { id: "tool_selected", title: "Tool selected", runningLabel: "Selecting tool", doneLabel: "Tool selected", icon: "bolt", durationMs: 600 },
+  { id: "authorization", title: "Authorization required", runningLabel: "Awaiting authorization", doneLabel: "User authorized", icon: "key", durationMs: 700 },
+  { id: "scope_check", title: "Scope check", runningLabel: "Verifying scopes", doneLabel: "Scopes approved", icon: "key", durationMs: 600 },
+  { id: "policy_check", title: "Policy check", runningLabel: "Evaluating policy", doneLabel: "Policy passed", icon: "shield", durationMs: 600 },
+  { id: "tool_execution", title: "Tool execution", runningLabel: "Executing tool", doneLabel: "Tool executed", icon: "bolt", durationMs: 900 },
+  { id: "result", title: "Result returned", runningLabel: "Returning result", doneLabel: "Result returned", icon: "check", durationMs: 600 },
+  { id: "audit", title: "Audit log saved", runningLabel: "Writing audit log", doneLabel: "Trace saved", icon: "shield", durationMs: 500 },
+];
+
+export interface ExecutionAuth {
+  user: string;
+  provider: string;
+  scopes: string[];
+  requiresAuth: boolean;
+}
+
+export const EXECUTION_DEFAULT_USER = "Alex Morgan";
+
+const TOOL_SCOPES: Record<string, string[]> = {
+  "GitHub.CreateIssue": ["repo:read", "issues:write"],
+  "GitHub.SetStarred": ["repo:read", "user:follow"],
+  "GitHub.StarRepo": ["repo:read", "user:follow"],
+  "Gmail.Search": ["gmail.readonly"],
+  "Gmail.GetMessage": ["gmail.readonly"],
+  "Slack.ListChannels": ["channels:read"],
+  "Slack.SendMessage": ["chat:write", "channels:read"],
+  "LinkedIn.CreatePost": ["w_member_social"],
+  "Calendar.ListEvents": ["calendar.events.readonly"],
+  "Linear.CreateIssue": ["issues:create"],
+  "Notion.CreatePage": ["pages:write"],
+  "HubSpot.SearchContacts": ["crm.objects.contacts.read"],
+  "Salesforce.UpdateRecord": ["api", "refresh_token"],
+  "Zendesk.CreateTicket": ["tickets:write"],
+  "Jira.CreateIssue": ["write:jira-work"],
+  "Stripe.CreateRefund": ["refunds:write"],
+};
+
+export function getExecutionAuth(toolAction: string): ExecutionAuth {
+  const meta = getPlaygroundToolMeta(toolAction);
+  const provider = meta?.app ?? toolAction.split(".")[0] ?? "provider";
+  const scopes = TOOL_SCOPES[toolAction] ?? ["read", "write"];
+  return { user: EXECUTION_DEFAULT_USER, provider, scopes, requiresAuth: true };
+}
+
+export function getToolDisplayName(action: string): string {
+  const meta = getPlaygroundToolMeta(action);
+  if (meta?.displayName) return meta.displayName;
+  const parts = action.split(".");
+  return parts[parts.length - 1] ?? action;
+}
+
+export function getDefaultExecuteTool(): string {
+  return "GitHub.SetStarred";
 }
 
 export function getDefaultConnectedTool(): string {
