@@ -73,7 +73,7 @@ export function CommandPalette() {
         items: [
           {
             id: "control-center",
-            label: "Control Center",
+            label: "Dashboard",
             meta: "Home",
             keywords: ["dashboard", "home", "operations"],
             icon: SquaresFour,
@@ -89,11 +89,11 @@ export function CommandPalette() {
           },
           {
             id: "tools",
-            label: "Tools",
-            meta: "Build",
-            keywords: ["tool catalog", "tool calls"],
+            label: "Tool catalog",
+            meta: "Tool Catalog",
+            keywords: ["tool catalog", "integrations", "connect"],
             icon: Wrench,
-            run: () => goTab("tool-calls"),
+            run: () => goScreen("tool-catalog"),
           },
           {
             id: "playground",
@@ -118,10 +118,10 @@ export function CommandPalette() {
           {
             id: "create-agent",
             label: "Create an agent flow",
-            meta: "Onboarding",
+            meta: "Playground",
             keywords: ["new agent", "setup", "get started"],
             icon: PlugsConnected,
-            run: () => goScreen("get-started"),
+            run: () => goScreen("playground"),
           },
         ],
       },

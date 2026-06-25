@@ -157,3 +157,9 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+@media (max-width: 767px) {
+  :root {
+    --content-pad-x: 16px;
+  }
+}

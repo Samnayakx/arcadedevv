@@ -21,6 +21,7 @@ import type { SidebarViewport } from "../../hooks/useSidebar";
 import type { Screen, TabId } from "../../types";
 import profileAvatar from "../../assets/profile-avatar.png";
 import { ArcadeLogo } from "./ArcadeLogo";
+import { TopBarBreadcrumb } from "./TopBarBreadcrumb";
 
 type NavTarget =
   | { kind: "tab"; tab: TabId }
@@ -37,7 +38,7 @@ type NavLink = {
 const PRIMARY_NAV: NavLink[] = [
   {
     id: "home",
-    label: "Home",
+    label: "Dashboard",
     icon: House,
     target: { kind: "tab", tab: "dashboard" },
     primary: true,
@@ -52,7 +53,7 @@ const PRIMARY_NAV: NavLink[] = [
     id: "tool-catalog",
     label: "Tool catalog",
     icon: MagnifyingGlass,
-    target: { kind: "tab", tab: "tool-calls" },
+    target: { kind: "screen", screen: "tool-catalog" },
   },
 ];
 
@@ -67,13 +68,7 @@ const BUILD_NAV: NavLink[] = [
     id: "tools",
     label: "Tools",
     icon: Clock,
-    target: { kind: "tab", tab: "tool-calls" },
-  },
-  {
-    id: "playground-build",
-    label: "Playground",
-    icon: MapTrifold,
-    target: { kind: "screen", screen: "playground" },
+    target: { kind: "screen", screen: "tool-catalog" },
   },
 ];
 
@@ -302,8 +297,6 @@ export function TopBar({
   sidebarCollapsed,
   sidebarViewport,
 }: {
-  title?: string;
-  subtitle?: string;
   onToggleSidebar?: () => void;
   sidebarOpen?: boolean;
   sidebarCollapsed?: boolean;
@@ -333,6 +326,10 @@ export function TopBar({
           >
             <Sidebar size={18} weight="regular" />
           </button>
+
+          <div className="top-bar-divider" aria-hidden />
+
+          <TopBarBreadcrumb />
         </div>
 
         <div className="top-bar-cms-right">

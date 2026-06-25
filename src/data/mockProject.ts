@@ -148,6 +148,12 @@ const activeProject: MockProject = {
       policyResult: "Allowed",
       duration: "14s",
       timestamp: "2 min ago",
+      tracePreview: {
+        userPrompt: "Create GitHub issue for CSV bug",
+        agentReasoning: "Identified bug report workflow — file export failure matches known CSV parser regression.",
+        toolCalls: ["GitHub.createIssue", "Linear.createIssue", "Slack.sendMessage"],
+        result: "Issue #248 created in engineering repo",
+      },
       traceSteps: [
         { time: "02:44:01.150", message: "User verified: Alex Morgan", status: "success" },
         { time: "02:44:01.420", message: "GitHub scopes approved: repo:read, issues:write", status: "success" },
@@ -169,6 +175,12 @@ const activeProject: MockProject = {
       policyResult: "Approval required",
       duration: "8s",
       timestamp: "8 min ago",
+      tracePreview: {
+        userPrompt: "Post escalation update to #company-wide",
+        agentReasoning: "Matched Slack send policy — company-wide channel requires human confirmation.",
+        toolCalls: ["Slack.sendMessage"],
+        result: "Blocked — approval required",
+      },
       traceSteps: [
         { time: "02:36:01.100", message: "User verified: Priya Shah", status: "success" },
         { time: "02:36:01.350", message: "Slack scopes checked: channels:read", status: "success" },
@@ -189,6 +201,12 @@ const activeProject: MockProject = {
       policyResult: "Allowed",
       duration: "12s",
       timestamp: "18 min ago",
+      tracePreview: {
+        userPrompt: "Update lead record from inbound email",
+        agentReasoning: "Parsed contact fields and routed to Salesforce update workflow.",
+        toolCalls: ["HubSpot.searchContacts", "Salesforce.updateRecord"],
+        result: "Failed — Salesforce UpstreamError (503)",
+      },
       traceSteps: [
         { time: "02:26:01.200", message: "User verified: Sam Lee", status: "success" },
         { time: "02:26:01.500", message: "Salesforce token valid", status: "success" },
@@ -209,6 +227,12 @@ const activeProject: MockProject = {
       policyResult: "Approval required",
       duration: "9s",
       timestamp: "12 min ago",
+      tracePreview: {
+        userPrompt: "Process refund for ticket #4821",
+        agentReasoning: "Refund amount exceeds $50 threshold — policy gate triggered.",
+        toolCalls: ["Zendesk.createTicket", "Stripe.createRefund"],
+        result: "Blocked — refund approval pending",
+      },
       traceSteps: [
         { time: "02:32:01.000", message: "User verified: Alex Morgan", status: "success" },
         { time: "02:32:02.100", message: "Policy: Refund above $50 requires approval", status: "blocked" },
@@ -248,11 +272,11 @@ const activeProject: MockProject = {
     { id: "aud4", time: "12 min ago", actor: "Agent", flow: "Support Triage", toolAction: "Stripe.CreateRefund", onBehalfOf: "Alex Morgan", system: "Stripe", result: "Blocked", traceId: "arc_tr_3a9f", flowId: "support-triage", runId: "run-4" },
   ],
   attention: [
-    { id: "att1", issue: "Slack missing chat:write scope", severity: "high", affectedFlow: "Bug Report Agent", category: "Authorization", impact: "4 blocked messages", nextAction: "Reauthorize Slack", flowId: "bug-report" },
+    { id: "att3", issue: "Salesforce auth expired", severity: "high", affectedFlow: "CRM Update Agent", category: "Authorization", impact: "5 runs blocked", nextAction: "Fix now", flowId: "crm-update" },
+    { id: "att1", issue: "Slack missing chat:write scope", severity: "high", affectedFlow: "Bug Report Agent", category: "Authorization", impact: "4 blocked messages", nextAction: "Reauthorize", flowId: "bug-report" },
+    { id: "att5", issue: "Slack policy approval pending", severity: "medium", affectedFlow: "Bug Report Agent", category: "Policy", impact: "4 messages waiting", nextAction: "Review", flowId: "bug-report" },
     { id: "att2", issue: "GitHub token expires in 2 days", severity: "medium", affectedFlow: "Bug Report Agent", category: "Authorization", impact: "2 flows affected", nextAction: "Reauthorize", flowId: "bug-report" },
-    { id: "att3", issue: "Salesforce update failing (UpstreamError)", severity: "high", affectedFlow: "CRM Update Agent", category: "Runtime", impact: "5 failed updates", nextAction: "Debug", flowId: "crm-update" },
     { id: "att4", issue: "Gateway has no client connection", severity: "low", affectedFlow: "Inbox Assistant", category: "Setup", impact: "No tool calls yet", nextAction: "Copy Cursor config", flowId: "inbox-assistant" },
-    { id: "att5", issue: "Slack send blocked by policy", severity: "medium", affectedFlow: "Bug Report Agent", category: "Policy", impact: "4 pending approvals", nextAction: "Review policy", flowId: "bug-report" },
   ],
 };
 

@@ -2,15 +2,15 @@ import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useApp } from "../context/AppContext";
 import { getMockProject } from "../data/mockProject";
-import { AgentFlowMap } from "../components/home/AgentFlowMap";
+import { AgentCardsPanel } from "../components/home/AgentCardsPanel";
 import { ControlCenterKpis } from "../components/home/ControlCenterKpis";
 import {
   ControlCenterEmptyHero,
   FirstRunMilestone,
-  FirstRunResultCard,
   SetupProgressChecklist,
 } from "../components/home/ControlCenterStates";
-import { NeedsAttentionTable } from "../components/home/NeedsAttentionTable";
+import { ExecutionTraceMap } from "../components/home/ExecutionTraceMap";
+import { NeedsAttentionCards } from "../components/home/NeedsAttentionCards";
 import { OperationalTabs } from "../components/home/OperationalTabs";
 import { ProjectSummaryPanel } from "../components/home/ProjectSummaryPanel";
 import { RecentRunsPanel } from "../components/home/RecentRunsPanel";
@@ -50,8 +50,6 @@ export function ProjectHome() {
   const {
     maturity,
     setMaturity,
-    flowFilter,
-    setFlowFilter,
     setActiveTab,
     activeTab,
     screen,
@@ -66,7 +64,7 @@ export function ProjectHome() {
   const isActive = maturity === "active" && !isEmpty;
 
   const project = getMockProject(maturity);
-  const latestRun = project.runs[0];
+  const traceRuns = project.runs.filter((run) => run.tracePreview);
   const operationsRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -80,8 +78,8 @@ export function ProjectHome() {
       <div className="project-home project-home-empty">
         <header className="project-home-header project-home-header-compact">
           <div className="project-home-header-main">
-            <span className="project-home-breadcrumb">Control Center</span>
-            <h1>Control Center</h1>
+            <span className="project-home-breadcrumb">Dashboard</span>
+            <h1>Dashboard</h1>
           </div>
           <div className="maturity-switcher">
             <span className="field-label">Demo state</span>
@@ -105,8 +103,8 @@ export function ProjectHome() {
     <div className="project-home">
       <header className="project-home-header">
         <div className="project-home-header-main">
-          <span className="project-home-breadcrumb">Control Center</span>
-          <h1>Control Center</h1>
+          <span className="project-home-breadcrumb">Dashboard</span>
+          <h1>Dashboard</h1>
           <p>
             {headerCopy(
               maturity,
@@ -151,24 +149,27 @@ export function ProjectHome() {
         </motion.section>
       )}
 
+      {project.flows.length > 0 && (
+        <section className="dashboard-section">
+          <AgentCardsPanel flows={project.flows} onOpenAgent={openAgent} />
+        </section>
+      )}
+
       <section className="dashboard-section">
         {isFirstRun ? (
           <div className="dashboard-grid dashboard-grid-first-run">
-            <AgentFlowMap
-              flows={project.flows}
-              selectedFlowId={flowFilter}
-              onSelectFlow={setFlowFilter}
-              isEmpty={isEmpty}
-              expanded
-            />
+            {traceRuns.length > 0 && (
+              <ExecutionTraceMap
+                runs={project.runs}
+                onOpenTrace={openTrace}
+                expanded
+              />
+            )}
             <div className="dashboard-stack">
-              {latestRun && (
-                <FirstRunResultCard run={latestRun} onOpenRun={openTrace} />
-              )}
               <SetupCtaBanner
                 firstRun
                 variant="card"
-                onViewTrace={() => latestRun && openTrace(latestRun.id)}
+                onViewTrace={() => traceRuns[0] && openTrace(traceRuns[0].id)}
               />
             </div>
           </div>
@@ -179,12 +180,10 @@ export function ProjectHome() {
             }`}
           >
             <ProjectSummaryPanel health={project.health} isEmpty={isEmpty} />
-            {isActive && (
-              <AgentFlowMap
-                flows={project.flows}
-                selectedFlowId={flowFilter}
-                onSelectFlow={setFlowFilter}
-                isEmpty={isEmpty}
+            {traceRuns.length > 0 && isActive && (
+              <ExecutionTraceMap
+                runs={project.runs}
+                onOpenTrace={openTrace}
                 expanded
               />
             )}
@@ -197,12 +196,10 @@ export function ProjectHome() {
 
       {(isActive || (isSetupPhase && project.attention.length > 0)) && (
         <section className="dashboard-section">
-          <div className="dashboard-card dashboard-card-fill">
-            <NeedsAttentionTable
-              items={project.attention}
-              onOpenAgent={openAgent}
-            />
-          </div>
+          <NeedsAttentionCards
+            items={project.attention}
+            onOpenAgent={openAgent}
+          />
         </section>
       )}
 

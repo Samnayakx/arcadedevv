@@ -102,9 +102,7 @@ export function useSidebar() {
     [viewport, collapsed],
   );
 
-  const isCompact =
-    (viewport === "desktop" && collapsed) ||
-    (viewport === "tablet" && !open);
+  const isCompact = viewport === "desktop" && collapsed;
 
   const isOverlay = open && viewport !== "desktop";
   const canResize = viewport === "desktop" && !collapsed;

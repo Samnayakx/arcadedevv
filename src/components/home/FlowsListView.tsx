@@ -77,7 +77,7 @@ export function FlowsListView({
     <ListViewShell
       breadcrumb={
         <>
-          <span>Control Center</span>
+          <span>Dashboard</span>
           <span className="list-view-breadcrumb-sep">/</span>
           <span className="list-view-breadcrumb-current">Agents</span>
         </>

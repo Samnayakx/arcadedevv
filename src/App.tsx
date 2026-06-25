@@ -10,6 +10,7 @@ import { GatewayFlow } from "./pages/GatewayFlow";
 import { GetStarted } from "./pages/GetStarted";
 import { ProjectHome } from "./pages/ProjectHome";
 import { Playground } from "./pages/Playground";
+import { ToolCatalog } from "./pages/ToolCatalog";
 import { SandboxFlow } from "./pages/SandboxFlow";
 import { AgentDetail } from "./pages/AgentDetail";
 import { fadeIn } from "./app/motion";
@@ -20,7 +21,7 @@ const ONBOARDING_SCREENS = new Set([
   "gateway",
   "sandbox",
 ]);
-const DASHBOARD_SCREENS = new Set(["empty", "active", "playground", "agent-detail"]);
+const DASHBOARD_SCREENS = new Set(["empty", "active", "playground", "agent-detail", "tool-catalog"]);
 
 function MainContent() {
   const { screen, setScreen } = useApp();
@@ -85,18 +86,6 @@ function MainContent() {
       <div className="app-main">
         {isDashboard && (
           <TopBar
-            title={
-              screen === "playground"
-                ? "Playground"
-                : screen === "agent-detail"
-                  ? "Agent Detail"
-                  : "Control Center"
-            }
-            subtitle={
-              screen === "empty"
-                ? "Default project · Setup incomplete"
-                : "Default project · Sandbox · Last updated 2 min ago"
-            }
             onToggleSidebar={sidebar.toggle}
             sidebarOpen={sidebar.open}
             sidebarCollapsed={sidebar.collapsed}
@@ -108,6 +97,7 @@ function MainContent() {
             {(screen === "empty" || screen === "active") && <ProjectHome />}
             {screen === "agent-detail" && <AgentDetail />}
             {screen === "playground" && <Playground />}
+            {screen === "tool-catalog" && <ToolCatalog />}
           </motion.main>
         </AnimatePresence>
         {isDashboard && <AppFooter />}

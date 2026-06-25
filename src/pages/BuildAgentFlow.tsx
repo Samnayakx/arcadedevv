@@ -39,11 +39,14 @@ const TOOL_ACTIONS = [
 ];
 
 export function BuildAgentFlow() {
-  const { setScreen, finishFlow } = useApp();
+  const { setScreen, finishFlow, playgroundPrompt, setPlaygroundPrompt } = useApp();
   const [step, setStep] = useState(0);
   const [framework, setFramework] = useState("LangChain");
   const [pm, setPm] = useState("npm");
-  const goBack = () => setScreen("get-started");
+  const goBack = () => {
+    setPlaygroundPrompt(null);
+    setScreen("get-started");
+  };
 
   const traceSteps =
     step >= 7
@@ -61,6 +64,11 @@ export function BuildAgentFlow() {
     () => [
       <div key="framework" className="step-panel">
         <h3>Choose framework</h3>
+        {playgroundPrompt && (
+          <div className="playground-prefill-banner">
+            <strong>From Playground:</strong> {playgroundPrompt}
+          </div>
+        )}
         <p>Select how your agent will call Arcade tools.</p>
         <div className="option-grid">
           {FRAMEWORKS.map((f) => (
@@ -217,7 +225,7 @@ const result = await client.tools.execute({
         <FlowStepNav step={7} setStep={setStep} max={STEPS.length - 1} hideNext />
       </div>,
     ],
-    [framework, pm],
+    [framework, pm, playgroundPrompt],
   );
 
   return (

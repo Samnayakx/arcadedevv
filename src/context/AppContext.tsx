@@ -18,18 +18,21 @@ interface AppContextValue {
   traceOpen: boolean;
   organizationName: string;
   projectName: string;
+  playgroundPrompt: string | null;
   setScreen: (screen: Screen) => void;
   setMaturity: (m: ProjectMaturity) => void;
   setActiveTab: (tab: TabId) => void;
   setFlowFilter: (id: string) => void;
   setOrganizationName: (name: string) => void;
   setProjectName: (name: string) => void;
+  setPlaygroundPrompt: (prompt: string | null) => void;
   openTrace: (runId: string) => void;
   closeTrace: () => void;
   openAgent: (agentId: string) => void;
   closeAgent: () => void;
   finishFlow: () => void;
   exploreDashboard: () => void;
+  deployFromPlayground: (prompt: string) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -42,12 +45,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [traceOpen, setTraceOpen] = useState(false);
-  const [organizationName, setOrganizationName] = useState("Sambit Nayak's Org");
+  const [organizationName, setOrganizationName] = useState("sambit's org");
   const [projectName, setProjectName] = useState("Default project");
+  const [playgroundPrompt, setPlaygroundPrompt] = useState<string | null>(null);
 
   const finishFlow = useCallback(() => {
     setMaturity("active");
-    setScreen("active");
+    setScreen("playground");
+  }, []);
+
+  const deployFromPlayground = useCallback((prompt: string) => {
+    setPlaygroundPrompt(prompt);
+    setScreen("build");
   }, []);
 
   const exploreDashboard = useCallback(() => {
@@ -87,18 +96,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
       traceOpen,
       organizationName,
       projectName,
+      playgroundPrompt,
       setScreen,
       setMaturity,
       setActiveTab,
       setFlowFilter,
       setOrganizationName,
       setProjectName,
+      setPlaygroundPrompt,
       openTrace,
       closeTrace,
       openAgent,
       closeAgent,
       finishFlow,
       exploreDashboard,
+      deployFromPlayground,
     }),
     [
       screen,
@@ -110,8 +122,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       traceOpen,
       organizationName,
       projectName,
+      playgroundPrompt,
       finishFlow,
       exploreDashboard,
+      deployFromPlayground,
       openTrace,
       closeTrace,
       openAgent,

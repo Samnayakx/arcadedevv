@@ -6,7 +6,8 @@ export type Screen =
   | "empty"
   | "active"
   | "playground"
-  | "agent-detail";
+  | "agent-detail"
+  | "tool-catalog";
 
 export type ProjectMaturity =
   | "empty"
@@ -82,6 +83,19 @@ export interface AgentFlow {
   edges: FlowEdge[];
 }
 
+export interface TraceStep {
+  time: string;
+  message: string;
+  status: "success" | "blocked" | "failed" | "info";
+}
+
+export interface TracePreview {
+  userPrompt: string;
+  agentReasoning: string;
+  toolCalls: string[];
+  result: string;
+}
+
 export interface Run {
   id: string;
   name: string;
@@ -95,12 +109,7 @@ export interface Run {
   duration: string;
   timestamp: string;
   traceSteps: TraceStep[];
-}
-
-export interface TraceStep {
-  time: string;
-  message: string;
-  status: "success" | "blocked" | "failed" | "info";
+  tracePreview?: TracePreview;
 }
 
 export interface ToolCallHealth {
