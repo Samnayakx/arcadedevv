@@ -77,14 +77,16 @@ export function Playground() {
 
       <div
         id="playground-workspace"
-        className="playground-layout"
+        className={clsx("playground-layout", mode === "execute" && "playground-layout-execute")}
         role="tabpanel"
         aria-labelledby={mode === "chat" ? "playground-tab-chat" : "playground-tab-execute"}
       >
-        <PlaygroundToolPanel
-          onSelectTool={session.insertTool}
-          selectedTool={session.selectedTool}
-        />
+        {mode === "chat" && (
+          <PlaygroundToolPanel
+            onSelectTool={session.insertTool}
+            selectedTool={session.selectedTool}
+          />
+        )}
 
         {mode === "chat" ? (
           <PlaygroundChat
@@ -99,13 +101,23 @@ export function Playground() {
             onRunAgain={session.runAgain}
           />
         ) : (
-          <PlaygroundExecuteView scenario={session.lastScenario} lastPrompt={session.lastPrompt} />
+          <PlaygroundExecuteView
+            selectedTool={session.selectedTool}
+            onSelectTool={session.selectTool}
+            scenario={session.lastScenario}
+            isRunning={session.isRunning}
+            traceStatus={session.traceStatus}
+            traceSteps={session.traceSteps}
+            onExecute={session.executeTool}
+          />
         )}
 
-        <PlaygroundTracePanel
-          liveStatus={session.liveTraceStatus}
-          steps={session.traceSteps}
-        />
+        {mode === "chat" && (
+          <PlaygroundTracePanel
+            liveStatus={session.liveTraceStatus}
+            steps={session.traceSteps}
+          />
+        )}
       </div>
 
       <PlaygroundHistoryDrawer

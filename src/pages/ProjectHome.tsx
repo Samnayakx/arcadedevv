@@ -16,14 +16,8 @@ import { ProjectSummaryPanel } from "../components/home/ProjectSummaryPanel";
 import { RecentRunsPanel } from "../components/home/RecentRunsPanel";
 import { SetupCtaBanner } from "../components/home/SetupCtaBanner";
 import { TraceDrawer } from "../components/home/TraceDrawer";
+import { MaturitySwitcher } from "../components/home/MaturitySwitcher";
 import type { ProjectMaturity } from "../types";
-
-const MATURITY_OPTIONS: { id: ProjectMaturity; label: string }[] = [
-  { id: "empty", label: "Empty" },
-  { id: "flow_no_auth", label: "Needs auth" },
-  { id: "first_run", label: "First run" },
-  { id: "active", label: "Active" },
-];
 
 function headerCopy(
   maturity: ProjectMaturity,
@@ -35,10 +29,10 @@ function headerCopy(
     return "Your project is ready. Connect a tool and run your first agent action.";
   }
   if (maturity === "flow_no_auth") {
-    return "GitHub access is blocking 1 agent flow.";
+    return "Your agent flow is ready. Authorize GitHub to run the first action.";
   }
   if (maturity === "first_run") {
-    return "Your agent ran successfully. Enable test users to go live.";
+    return "Your first trace succeeded. Enable test users to go live.";
   }
   if (attentionCount > 0) {
     return `${attentionCount} issues need attention across ${activeAgents} active agents.`;
@@ -49,19 +43,17 @@ function headerCopy(
 export function ProjectHome() {
   const {
     maturity,
-    setMaturity,
     setActiveTab,
     activeTab,
-    screen,
     openTrace,
     openAgent,
   } = useApp();
 
-  const isEmpty = maturity === "empty" || screen === "empty";
+  const isEmpty = maturity === "empty";
   const isPreRun = maturity === "flow_no_auth";
   const isFirstRun = maturity === "first_run";
   const isSetupPhase = isPreRun || isFirstRun;
-  const isActive = maturity === "active" && !isEmpty;
+  const isActive = maturity === "active";
 
   const project = getMockProject(maturity);
   const traceRuns = project.runs.filter((run) => run.tracePreview);
@@ -81,17 +73,7 @@ export function ProjectHome() {
             <span className="project-home-breadcrumb">Dashboard</span>
             <h1>Dashboard</h1>
           </div>
-          <div className="maturity-switcher">
-            <span className="field-label">Demo state</span>
-            <select
-              value={maturity}
-              onChange={(e) => setMaturity(e.target.value as ProjectMaturity)}
-            >
-              {MATURITY_OPTIONS.map((o) => (
-                <option key={o.id} value={o.id}>{o.label}</option>
-              ))}
-            </select>
-          </div>
+          <MaturitySwitcher />
         </header>
         <ControlCenterEmptyHero />
         <TraceDrawer />
@@ -114,17 +96,7 @@ export function ProjectHome() {
             )}
           </p>
         </div>
-        <div className="maturity-switcher">
-          <span className="field-label">Demo state</span>
-          <select
-            value={maturity}
-            onChange={(e) => setMaturity(e.target.value as ProjectMaturity)}
-          >
-            {MATURITY_OPTIONS.map((o) => (
-              <option key={o.id} value={o.id}>{o.label}</option>
-            ))}
-          </select>
-        </div>
+        <MaturitySwitcher />
       </header>
 
       {isPreRun && (
@@ -147,12 +119,6 @@ export function ProjectHome() {
         >
           <ControlCenterKpis health={project.health} onSelectTab={setActiveTab} />
         </motion.section>
-      )}
-
-      {project.flows.length > 0 && (
-        <section className="dashboard-section">
-          <AgentCardsPanel flows={project.flows} onOpenAgent={openAgent} />
-        </section>
       )}
 
       <section className="dashboard-section">
@@ -179,7 +145,11 @@ export function ProjectHome() {
               isPreRun ? "dashboard-grid-3" : "dashboard-grid-summary-flow"
             }`}
           >
-            <ProjectSummaryPanel health={project.health} isEmpty={isEmpty} />
+            <ProjectSummaryPanel
+              health={project.health}
+              isEmpty={isEmpty}
+              onSelectTab={setActiveTab}
+            />
             {traceRuns.length > 0 && isActive && (
               <ExecutionTraceMap
                 runs={project.runs}
@@ -193,6 +163,12 @@ export function ProjectHome() {
           </div>
         )}
       </section>
+
+      {project.flows.length > 0 && (
+        <section className="dashboard-section">
+          <AgentCardsPanel flows={project.flows} onOpenAgent={openAgent} />
+        </section>
+      )}
 
       {(isActive || (isSetupPhase && project.attention.length > 0)) && (
         <section className="dashboard-section">

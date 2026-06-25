@@ -11,6 +11,20 @@ export interface PlaygroundTool {
   needsAuth?: boolean;
 }
 
+export interface PlaygroundToolParam {
+  name: string;
+  label: string;
+  required: boolean;
+  placeholder?: string;
+  defaultValue?: string;
+}
+
+export interface PlaygroundToolDefinition {
+  description: string;
+  params: PlaygroundToolParam[];
+  expectedOutput: string;
+}
+
 export interface PlaygroundPrompt {
   id: string;
   brand: string;
@@ -251,6 +265,87 @@ export const PLAYGROUND_STATUS = {
   policiesActive: 2,
   environment: "Sandbox" as const,
 };
+
+export const PLAYGROUND_TOOL_DEFINITIONS: Record<string, PlaygroundToolDefinition> = {
+  "Gmail.Search": {
+    description: "Search Gmail messages using query syntax and return matching thread metadata.",
+    params: [
+      { name: "query", label: "query", required: true, placeholder: "is:unread", defaultValue: "is:unread" },
+      { name: "maxResults", label: "maxResults", required: true, placeholder: "20", defaultValue: "20" },
+    ],
+    expectedOutput: "Array of message metadata objects with subject, sender, and snippet fields.",
+  },
+  "Gmail.GetMessage": {
+    description: "Retrieve a single Gmail message by ID including headers and body content.",
+    params: [
+      { name: "messageId", label: "messageId", required: true, placeholder: "msg_abc123" },
+      { name: "format", label: "format", required: true, placeholder: "full", defaultValue: "full" },
+    ],
+    expectedOutput: "Full message payload with headers, body, and attachment metadata.",
+  },
+  "Slack.ListChannels": {
+    description: "List Slack channels visible to the authenticated user.",
+    params: [
+      { name: "types", label: "types", required: true, placeholder: "public_channel", defaultValue: "public_channel" },
+      { name: "limit", label: "limit", required: true, placeholder: "50", defaultValue: "50" },
+    ],
+    expectedOutput: "Channel list with id, name, and membership status.",
+  },
+  "Slack.SendMessage": {
+    description: "Post a message to a Slack channel on behalf of the connected user.",
+    params: [
+      { name: "channel", label: "channel", required: true, placeholder: "#general" },
+      { name: "text", label: "text", required: true, placeholder: "Message body" },
+    ],
+    expectedOutput: "Message timestamp and channel confirmation object.",
+  },
+  "GitHub.StarRepo": {
+    description: "Star a GitHub repository for the authenticated user account.",
+    params: [
+      { name: "owner", label: "owner", required: true, placeholder: "arcadeai", defaultValue: "arcadeai" },
+      { name: "repo", label: "repo", required: true, placeholder: "arcade-mcp", defaultValue: "arcade-mcp" },
+    ],
+    expectedOutput: "204 No Content on success with audit log entry.",
+  },
+  "GitHub.CreateIssue": {
+    description: "Create a new issue in a GitHub repository.",
+    params: [
+      { name: "owner", label: "owner", required: true, placeholder: "arcadeai" },
+      { name: "repo", label: "repo", required: true, placeholder: "arcade-mcp" },
+      { name: "title", label: "title", required: true, placeholder: "Issue title" },
+    ],
+    expectedOutput: "Created issue object with number, URL, and state.",
+  },
+};
+
+const DEFAULT_TOOL_DEFINITION: PlaygroundToolDefinition = {
+  description: "Execute a connected tool action with user-scoped authorization and policy checks.",
+  params: [
+    { name: "userId", label: "userId", required: true, placeholder: "user_sambit", defaultValue: "user_sambit" },
+    { name: "input", label: "input", required: true, placeholder: "{}" },
+  ],
+  expectedOutput: "Tool-specific JSON response from the Arcade execution gateway.",
+};
+
+export function getPlaygroundToolDefinition(action: string): PlaygroundToolDefinition {
+  return PLAYGROUND_TOOL_DEFINITIONS[action] ?? DEFAULT_TOOL_DEFINITION;
+}
+
+export function getPlaygroundToolMeta(action: string) {
+  return PLAYGROUND_TOOLS.find((tool) => tool.action === action) ?? null;
+}
+
+export function scenarioForTool(toolAction: string): TraceScenario {
+  const match = Object.values(PLAYGROUND_TRACE_SCENARIOS).find(
+    (scenario) => scenario.toolAction === toolAction,
+  );
+  if (match) return match;
+  return { ...PLAYGROUND_TRACE_SCENARIOS.default, toolAction };
+}
+
+export function getDefaultConnectedTool(): string {
+  return PLAYGROUND_TOOLS.find((tool) => tool.connected)?.action ?? "Gmail.Search";
+}
 
 export function getPlaygroundToolCounts() {
   const connected = PLAYGROUND_TOOLS.filter((t) => t.connected).length;

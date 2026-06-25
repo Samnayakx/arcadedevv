@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import type { TracePreview } from "../types";
 import {
   matchScenario,
+  scenarioForTool,
   type PlaygroundPrompt,
   type TraceScenario,
 } from "../data/mockPlayground";
@@ -157,6 +158,19 @@ export function usePlaygroundSession() {
     });
   }, []);
 
+  const selectTool = useCallback((action: string) => {
+    setSelectedTool(action);
+  }, []);
+
+  const executeTool = useCallback(
+    (toolAction: string) => {
+      if (isRunning) return;
+      const scenario = scenarioForTool(toolAction);
+      runTrace(`Execute ${toolAction}`, scenario);
+    },
+    [isRunning, runTrace],
+  );
+
   const liveTraceStatus: "waiting" | "active" | "complete" =
     traceStatus === "idle"
       ? "waiting"
@@ -181,5 +195,7 @@ export function usePlaygroundSession() {
     resetSession,
     runAgain,
     insertTool,
+    selectTool,
+    executeTool,
   };
 }

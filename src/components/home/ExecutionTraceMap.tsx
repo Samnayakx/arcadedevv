@@ -27,7 +27,7 @@ function FitViewOnChange({ layoutKey }: { layoutKey: string }) {
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      void fitView({ padding: 0.35, maxZoom: 1, minZoom: 0.45, duration: 0 }).then(() => {
+      void fitView({ padding: 0.08, maxZoom: 1, minZoom: 0.5, duration: 0 }).then(() => {
         const viewport = getViewport();
         if (viewport.zoom < MIN_CANVAS_ZOOM) {
           setViewport({ ...viewport, zoom: MIN_CANVAS_ZOOM });
@@ -75,8 +75,8 @@ function TraceCanvas({ run }: { run: Run }) {
         zoomOnDoubleClick={false}
         preventScrolling={false}
         defaultEdgeOptions={{
-          type: "default",
-          style: { stroke: "rgba(255, 255, 255, 0.22)", strokeWidth: 1.5 },
+          type: "smoothstep",
+          style: { stroke: "rgba(255, 255, 255, 0.22)", strokeWidth: 1.25 },
         }}
         connectionLineStyle={{ stroke: "rgba(255, 255, 255, 0.22)", strokeWidth: 1.5 }}
         colorMode="dark"

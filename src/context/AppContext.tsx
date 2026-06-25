@@ -39,7 +39,7 @@ const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [screen, setScreen] = useState<Screen>("get-started");
-  const [maturity, setMaturity] = useState<ProjectMaturity>("empty");
+  const [maturity, setMaturityState] = useState<ProjectMaturity>("empty");
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
   const [flowFilter, setFlowFilter] = useState("all");
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
@@ -49,8 +49,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [projectName, setProjectName] = useState("Default project");
   const [playgroundPrompt, setPlaygroundPrompt] = useState<string | null>(null);
 
+  const setMaturity = useCallback((next: ProjectMaturity) => {
+    setMaturityState(next);
+    setScreen(next === "empty" ? "empty" : "active");
+    setActiveTab("dashboard");
+    setTraceOpen(false);
+    setFlowFilter("all");
+  }, []);
+
   const finishFlow = useCallback(() => {
-    setMaturity("active");
+    setMaturityState("active");
     setScreen("playground");
   }, []);
 
@@ -60,8 +68,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const exploreDashboard = useCallback(() => {
-    setMaturity("empty");
+    setMaturityState("empty");
     setScreen("empty");
+    setActiveTab("dashboard");
   }, []);
 
   const openTrace = useCallback((runId: string) => {
@@ -126,6 +135,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       finishFlow,
       exploreDashboard,
       deployFromPlayground,
+      setMaturity,
       openTrace,
       closeTrace,
       openAgent,

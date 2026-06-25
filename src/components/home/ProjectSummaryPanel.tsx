@@ -1,7 +1,15 @@
-import type { ProjectHealth } from "../../types";
+import type { ProjectHealth, TabId } from "../../types";
 import { StatusBadge } from "../primitives/StatusBadge";
 
-export function ProjectSummaryPanel({ health, isEmpty }: { health: ProjectHealth; isEmpty?: boolean }) {
+export function ProjectSummaryPanel({
+  health,
+  isEmpty,
+  onSelectTab,
+}: {
+  health: ProjectHealth;
+  isEmpty?: boolean;
+  onSelectTab?: (tab: TabId) => void;
+}) {
   const items = [
     { label: "Status", value: <StatusBadge status={health.status} small /> },
     { label: "Active flows", value: health.activeFlows },
@@ -30,6 +38,24 @@ export function ProjectSummaryPanel({ health, isEmpty }: { health: ProjectHealth
           </div>
         ))}
       </dl>
+      {!isEmpty && onSelectTab && (
+        <div className="project-summary-actions">
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={() => onSelectTab("tool-calls")}
+          >
+            Logs
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={() => onSelectTab("audit")}
+          >
+            Audits
+          </button>
+        </div>
+      )}
     </div>
   );
 }

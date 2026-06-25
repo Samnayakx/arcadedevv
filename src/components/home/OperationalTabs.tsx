@@ -7,18 +7,14 @@ import type {
   MockProject,
   PolicyRecord,
   ProjectUser,
-  Run,
   TabId,
   ToolCallHealth,
 } from "../../types";
 import { DataTable } from "../primitives/DataTable";
-import { AppChip, AppChipList, AppLogoList, ToolActionCell } from "../primitives/AppChip";
+import { AppChip, AppChipList, ToolActionCell } from "../primitives/AppChip";
 import { EmptyState, EmptyStateActions } from "../primitives/EmptyState";
-import { StatusBadge } from "../primitives/StatusBadge";
 
 const TABS: { id: TabId; label: string }[] = [
-  { id: "flows", label: "Flows" },
-  { id: "runs", label: "Runs" },
   { id: "tool-calls", label: "Tool Calls" },
   { id: "users", label: "Users" },
   { id: "auth", label: "Auth" },
@@ -26,6 +22,12 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "audit", label: "Audit" },
   { id: "usage", label: "Usage" },
 ];
+
+const DEFAULT_OPERATIONAL_TAB: TabId = "tool-calls";
+
+function resolveOperationalTab(activeTab: TabId): TabId {
+  return TABS.some((tab) => tab.id === activeTab) ? activeTab : DEFAULT_OPERATIONAL_TAB;
+}
 
 function filterByFlow<T extends { flowId?: string; flowIds?: string[] }>(
   items: T[],
@@ -46,13 +48,9 @@ export function OperationalTabs({
   project: MockProject;
   isEmpty: boolean;
 }) {
-  const { activeTab, setActiveTab, flowFilter, setFlowFilter, openTrace, openAgent, setScreen } = useApp();
+  const { activeTab, setActiveTab, flowFilter, openTrace, setScreen } = useApp();
+  const selectedTab = resolveOperationalTab(activeTab);
 
-  const flows =
-    flowFilter === "all"
-      ? project.flows
-      : project.flows.filter((f) => f.id === flowFilter);
-  const runs = filterByFlow(project.runs, flowFilter) as Run[];
   const toolCalls = filterByFlow(project.toolCalls, flowFilter) as ToolCallHealth[];
   const users = filterByFlow(project.users, flowFilter) as ProjectUser[];
   const auth = filterByFlow(project.auth, flowFilter) as AuthRecord[];
@@ -66,10 +64,10 @@ export function OperationalTabs({
           <button
             key={tab.id}
             type="button"
-            className={`tab ${activeTab === tab.id ? "active" : ""}`}
+            className={`tab ${selectedTab === tab.id ? "active" : ""}`}
             onClick={() => setActiveTab(tab.id)}
           >
-            {activeTab === tab.id && <motion.span layoutId="tab-underline" className="tab-underline" />}
+            {selectedTab === tab.id && <motion.span layoutId="tab-underline" className="tab-underline" />}
             {tab.label}
           </button>
         ))}
@@ -77,100 +75,14 @@ export function OperationalTabs({
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={activeTab + flowFilter}
+          key={selectedTab + flowFilter}
           className="tab-panel"
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          {activeTab === "flows" &&
-            (isEmpty || flows.length === 0 ? (
-              <EmptyState
-                title="No flows yet"
-                description="Flows are agent workflows that connect tools, permissions, users, and execution logs."
-                actions={
-                  <EmptyStateActions
-                    primary="Create first flow"
-                    secondary="Browse tool catalog"
-                    onPrimary={() => setScreen("get-started")}
-                    onSecondary={() => setScreen("get-started")}
-                  />
-                }
-              />
-            ) : (
-              <DataTable
-                columns={[
-                  {
-                    key: "name",
-                    label: "Flow",
-                    className: "ops-table-primary",
-                    render: (flow) => (
-                      <button
-                        type="button"
-                        className="ops-table-link"
-                        onClick={() => openAgent(flow.id)}
-                      >
-                        {flow.name}
-                      </button>
-                    ),
-                  },
-                  { key: "type", label: "Type", className: "ops-table-meta" },
-                  {
-                    key: "tools",
-                    label: "Tools",
-                    className: "ops-table-meta",
-                    render: (flow) => <AppLogoList apps={flow.tools} />,
-                  },
-                  {
-                    key: "status",
-                    label: "Status",
-                    className: "ops-table-status",
-                    render: (flow) => <StatusBadge status={flow.status} small />,
-                  },
-                  { key: "lastRun", label: "Last run", className: "ops-table-meta" },
-                  {
-                    key: "runsToday",
-                    label: "Runs today",
-                    className: "ops-table-meta",
-                    render: (flow) => String(flow.runsToday),
-                  },
-                ]}
-                rows={flows}
-                onRowAction={(flow) => {
-                  setFlowFilter(flow.id);
-                  setActiveTab("runs");
-                }}
-                actionLabel="View runs"
-              />
-            ))}
-
-          {activeTab === "runs" &&
-            (isEmpty || runs.length === 0 ? (
-              <EmptyState
-                title="No runs yet"
-                description="Once an agent calls a tool, runs will appear here with tools used, authorization checks, policy decisions, and trace links."
-                actions={<EmptyStateActions primary="Run sandbox test" onPrimary={() => setScreen("sandbox")} />}
-              />
-            ) : (
-              <DataTable
-                columns={[
-                  { key: "name", label: "Run", className: "ops-table-primary" },
-                  { key: "flowName", label: "Flow", className: "ops-table-meta" },
-                  { key: "triggeredBy", label: "Triggered by", className: "ops-table-meta" },
-                  { key: "user", label: "User", className: "ops-table-meta" },
-                  { key: "status", label: "Status", className: "ops-table-status", render: (r) => <StatusBadge status={r.status} small /> },
-                  { key: "toolsCalled", label: "Tools called", className: "ops-table-meta", render: (r) => <AppLogoList apps={r.toolsCalled} /> },
-                  { key: "policyResult", label: "Policy result", className: "ops-table-meta" },
-                  { key: "duration", label: "Duration", className: "ops-table-meta", mono: true },
-                ]}
-                rows={runs}
-                onRowAction={(r) => openTrace(r.id)}
-                actionLabel="View trace"
-              />
-            ))}
-
-          {activeTab === "tool-calls" &&
+          {selectedTab === "tool-calls" &&
             (isEmpty ? (
               <div>
                 <EmptyState
@@ -201,7 +113,7 @@ export function OperationalTabs({
               />
             ))}
 
-          {activeTab === "users" && (
+          {selectedTab === "users" && (
             <DataTable
               columns={[
                 { key: "name", label: "User / group" },
@@ -216,7 +128,7 @@ export function OperationalTabs({
             />
           )}
 
-          {activeTab === "auth" &&
+          {selectedTab === "auth" &&
             (isEmpty || auth.length === 0 ? (
               <EmptyState
                 title="No apps connected yet"
@@ -240,7 +152,7 @@ export function OperationalTabs({
               />
             ))}
 
-          {activeTab === "policies" &&
+          {selectedTab === "policies" &&
             (isEmpty || policies.length === 0 ? (
               <EmptyState
                 title="No custom policies yet"
@@ -261,7 +173,7 @@ export function OperationalTabs({
               />
             ))}
 
-          {activeTab === "audit" &&
+          {selectedTab === "audit" &&
             (isEmpty || audit.length === 0 ? (
               <EmptyState
                 title="No audit events yet"
@@ -282,7 +194,7 @@ export function OperationalTabs({
               />
             ))}
 
-          {activeTab === "usage" && (
+          {selectedTab === "usage" && (
             <div className="usage-panel">
               <div className="usage-cards">
                 <div className="usage-card">

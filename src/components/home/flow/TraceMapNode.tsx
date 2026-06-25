@@ -20,7 +20,7 @@ function NodeHead({
 
   return (
     <div className="trace-exec-node-head">
-      <Icon size={16} weight="duotone" aria-hidden />
+      <Icon size={13} weight="duotone" aria-hidden />
       <span>{label}</span>
     </div>
   );
@@ -48,13 +48,13 @@ export function TraceMapNode({ data }: NodeProps<Node<TraceMapNodeData>>) {
               src={data.logoUrl}
               alt=""
               className="flow-map-node-logo"
-              width={24}
-              height={24}
+              width={18}
+              height={18}
               loading="lazy"
               decoding="async"
             />
           ) : (
-            <Code size={18} weight="bold" className="flow-map-node-icon" aria-hidden />
+            <Code size={16} weight="bold" className="flow-map-node-icon" aria-hidden />
           )}
           <code className="trace-exec-tool-code">{data.toolCall}</code>
         </div>
@@ -82,6 +82,14 @@ export function TraceMapNode({ data }: NodeProps<Node<TraceMapNodeData>>) {
         position={Position.Left}
         className="trace-map-handle"
       />
+      {data.kind === "reasoning" && (
+        <Handle
+          id="in-top"
+          type="target"
+          position={Position.Top}
+          className="trace-map-handle trace-map-handle-top"
+        />
+      )}
       <NodeHead kind={data.kind} label={data.label} />
       {data.body && (
         <p
@@ -92,12 +100,22 @@ export function TraceMapNode({ data }: NodeProps<Node<TraceMapNodeData>>) {
           {data.body}
         </p>
       )}
-      <Handle
-        id="out-right"
-        type="source"
-        position={Position.Right}
-        className="trace-map-handle"
-      />
+      {data.kind === "prompt" && (
+        <Handle
+          id="out-bottom"
+          type="source"
+          position={Position.Bottom}
+          className="trace-map-handle trace-map-handle-bottom"
+        />
+      )}
+      {(data.kind === "reasoning") && (
+        <Handle
+          id="out-right"
+          type="source"
+          position={Position.Right}
+          className="trace-map-handle"
+        />
+      )}
     </div>
   );
 }

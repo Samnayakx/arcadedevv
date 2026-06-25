@@ -118,10 +118,10 @@ export function CommandPalette() {
           {
             id: "create-agent",
             label: "Create an agent flow",
-            meta: "Playground",
+            meta: "Onboarding",
             keywords: ["new agent", "setup", "get started"],
             icon: PlugsConnected,
-            run: () => goScreen("playground"),
+            run: () => goScreen("get-started"),
           },
         ],
       },

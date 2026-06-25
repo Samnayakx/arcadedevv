@@ -336,7 +336,7 @@ export function TopBar({
           <button type="button" className="top-bar-icon-btn" aria-label="Notifications">
             <Bell size={18} weight="regular" />
           </button>
-          <button type="button" className="btn btn-primary top-bar-cta" onClick={() => setScreen("playground")}>
+          <button type="button" className="btn btn-primary top-bar-cta" onClick={() => setScreen("get-started")}>
             <Plus size={16} weight="bold" aria-hidden />
             <span>Create an agent flow</span>
           </button>
