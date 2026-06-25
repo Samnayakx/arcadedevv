@@ -1,0 +1,143 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..590&family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+  /* Surfaces — Arcade product */
+  --bg: #000000;
+  --panel: #0a0a0a;
+  --panel2: #0f0f0f;
+  --surface: #0a0a0a;
+  --input: #050505;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-subtle: rgba(255, 255, 255, 0.05);
+  --line-strong: rgba(255, 255, 255, 0.16);
+
+  /* Text */
+  --text: #ffffff;
+  --text-dim: #a3a3a3;
+  --text-faint: #737373;
+  --text-muted: #525252;
+
+  /* Accent — Arcade dev green (use sparingly) */
+  --accent: #c6ff00;
+  --accent-on: #000000;
+  --accent-bright: #d4ff33;
+  --accent-dim: rgba(198, 255, 0, 0.1);
+  --accent-dim-strong: rgba(198, 255, 0, 0.16);
+  --accent-border: rgba(198, 255, 0, 0.28);
+
+  /* Semantic — not brand green */
+  --success: #86efac;
+  --success-dim: rgba(134, 239, 172, 0.1);
+  --warning: #f59e0b;
+  --warning-dim: rgba(245, 158, 11, 0.12);
+  --error: #ef4444;
+  --error-dim: rgba(239, 68, 68, 0.12);
+  --info: #a3a3a3;
+  --info-dim: rgba(255, 255, 255, 0.06);
+
+  /* Legacy aliases */
+  --green: var(--accent);
+  --green-dim: var(--accent-dim);
+  --amber: var(--warning);
+  --amber-dim: var(--warning-dim);
+  --rose: var(--error);
+  --rose-dim: var(--error-dim);
+  --blue: var(--info);
+  --blue-dim: var(--info-dim);
+  --violet: #a3a3a3;
+  --violet-dim: rgba(255, 255, 255, 0.06);
+
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-pill: 0;
+  --radius-badge: 0;
+  --nav-width: 240px;
+  --nav-width-collapsed: 56px;
+  --nav-pad-x: 16px;
+  --nav-pad-top: 24px;
+  --nav-pad-bottom: 20px;
+  --nav-logo-gap: 32px;
+  --nav-item-gap: 8px;
+  --nav-item-pad-y: 10px;
+  --nav-item-pad-x: 12px;
+  --nav-icon-gap: 12px;
+  --nav-sub-indent: 32px;
+  --nav-section-gap: 16px;
+  --nav-footer-gap: 16px;
+  --topbar-height: 56px;
+  --font: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  --shadow-card: none;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  background: var(--bg);
+  color: var(--text);
+  font-feature-settings: "cv01", "ss03";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+a {
+  color: inherit;
+}
+
+.mono {
+  font-family: var(--mono);
+}
+
+.dot-grid-bg {
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
